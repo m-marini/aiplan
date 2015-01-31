@@ -9,17 +9,17 @@ object Planner {
    * State
    *
    */
-  def plan(si: DWRState, goal: (DWRState) => Boolean, heuristic: (DWRState) => Double): Option[Seq[Action]] = {
+  def plan[O <: Operator](si: State[O], goal: (State[O]) => Boolean, heuristic: (State[O]) => Double): Option[Seq[O]] = {
 
-    case class SearchNode(action: Option[Action], tail: Option[SearchNode]) {
-      require(action.isEmpty && tail.isEmpty || !action.isEmpty && !tail.isEmpty)
+    case class SearchNode(op: Option[O], tail: Option[SearchNode]) {
+      require(op.isEmpty && tail.isEmpty || !op.isEmpty && !tail.isEmpty)
 
       /**
        *
        */
-      lazy val state: DWRState =
-        if (action.isEmpty) si else
-          action.get.apply(tail.get.state)
+      lazy val state: State[O] =
+        if (op.isEmpty) si else
+          tail.get.state(op.get)
 
       /**
        *
@@ -29,22 +29,21 @@ object Planner {
       /**
        *
        */
-      lazy val g: Double = if (action.isEmpty) 0 else
-        action.get.cost + tail.get.g
+      lazy val g: Double = if (op.isEmpty) 0 else op.get.cost + tail.get.g
 
-      def actionPath: Seq[Action] = {
-        def loop(path: Seq[Action], n: SearchNode): Seq[Action] =
-          if (n.action.isEmpty)
+      def actionPath: Seq[O] = {
+        def loop(path: Seq[O], n: SearchNode): Seq[O] =
+          if (n.op.isEmpty)
             path
           else
-            loop(n.action.get +: path, n.tail.get)
+            loop(n.op.get +: path, n.tail.get)
         loop(Nil, this)
       }
     }
 
-    def best(n: Int, fringe: Map[DWRState, SearchNode], visited: Set[DWRState]): (Int, Option[SearchNode]) = {
+    def best(n: Int, fringe: Map[State[O], SearchNode], visited: Set[State[O]]): (Int, Option[SearchNode]) = {
 
-      def select: (DWRState, SearchNode) = fringe.reduce((a, b) => if (a._2.cost <= b._2.cost) a else b)
+      def select: (State[O], SearchNode) = fringe.reduce((a, b) => if (a._2.cost <= b._2.cost) a else b)
       if (fringe.isEmpty)
         (n, None)
       else {
@@ -60,7 +59,7 @@ object Planner {
           val ss = (for { o <- sn.state.operators.toSeq }
             yield SearchNode(Some(o), Some(sn))).filterNot(sn => nv.contains(sn.state))
 
-          def merge(sn: Map[DWRState, SearchNode], nn: Seq[SearchNode]): Map[DWRState, SearchNode] =
+          def merge(sn: Map[State[O], SearchNode], nn: Seq[SearchNode]): Map[State[O], SearchNode] =
             if (nn.isEmpty)
               sn
             else {

@@ -1,11 +1,11 @@
 package org.mmarini.aiplan
 
-object Main extends App {
+object MainDWR extends App {
   import Location._
   import Container._
 
-  def goal(s: DWRState) =
-    s.piles.contains(Pile(Location2, List(Container2, Container1, Container4, Container3)))
+  def goal(s: State[Action]) =
+    s.asInstanceOf[DWRState].piles.contains(Pile(Location2, List(Container2, Container1, Container4, Container3)))
 
   /**
    * 78393 / 105283
@@ -15,12 +15,12 @@ object Main extends App {
     Seq(Pile(Location1, List(Container1, Container2, Container3, Container4)), Pile(Location2, List()), Pile(Location3, List())),
     Seq(Robot(1, Location2, None)))
 
-  def heuristic(s: DWRState): Double = {
-    val p = s.piles.find(_.location == Location2).get
+  def heuristic(s: State[Action]): Double = {
+    val p = s.asInstanceOf[DWRState].piles.find(_.location == Location2).get
     4 - p.containers.size
   }
 
-  val plan = Planner.plan(initial, goal, heuristic)
+  val plan = Planner.plan[Action](initial, goal, heuristic)
 
   if (plan.isEmpty)
     println("No plan")

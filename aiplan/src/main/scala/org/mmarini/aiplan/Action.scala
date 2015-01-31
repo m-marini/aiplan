@@ -3,12 +3,17 @@ package org.mmarini.aiplan
 /**
  *
  */
-trait Action extends Operator[DWRState] {
+trait Action extends Operator {
 
   /**
    *
    */
   def precondition(state: DWRState): Boolean
+
+  /**
+   *
+   */
+  def apply(state: DWRState): DWRState
 
   /**
    *

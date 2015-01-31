@@ -6,6 +6,12 @@ package org.mmarini.aiplan
  *  so the state values are the properties of objects
  */
 case class DWRState(cranes: Seq[Crane], piles: Seq[Pile], robots: Seq[Robot]) extends State[Action] {
+
+  /**
+   *
+   */
+  def apply(a: Action) = a(this)
+
   /**
    *
    */
