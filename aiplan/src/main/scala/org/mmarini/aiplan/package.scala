@@ -12,6 +12,7 @@ package object aiplan {
     val Container1 = Value("C1")
     val Container2 = Value("C2")
     val Container3 = Value("C3")
+    val Container4 = Value("C4")
   }
 
   object Location extends Enumeration {
@@ -19,7 +20,7 @@ package object aiplan {
     val Location2 = Value("L2")
     val Location3 = Value("L3")
 
-    private val topology = Set((Location1, Location3), (Location2, Location3))
+    private val topology = Set((Location1, Location2), (Location1, Location3), (Location2, Location3))
 
     /**
      *
