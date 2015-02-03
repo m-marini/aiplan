@@ -1,9 +1,11 @@
 package org.mmarini.aiplan
 
+import com.typesafe.scalalogging.LazyLogging
+
 /**
  *
  */
-object Planner {
+object Planner extends LazyLogging {
 
   /**
    * State
@@ -48,7 +50,7 @@ object Planner {
         (n, None)
       else {
         val sn = select._2
-        println(s"n=$n fringe=${fringe.size} g=${sn.g} cost=${sn.cost}")
+        logger.info(s"n=$n fringe=${fringe.size} g=${sn.g} cost=${sn.cost}")
 
         if (goal(sn.state))
           (n, Some(sn))

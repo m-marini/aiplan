@@ -1,10 +1,11 @@
 package org.mmarini.aiplan
 import scala.math.abs
+import com.typesafe.scalalogging.LazyLogging
 
-object MainEight extends App {
+object MainEight extends App with LazyLogging {
 
   val goalSeq = IndexedSeq(None, Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8))
-  val initState = IndexedSeq(Some(7),  Some(2), Some(4), Some(5),None, Some(6), Some(8), Some(3), Some(1))
+  val initState = IndexedSeq(Some(7), Some(2), Some(4), Some(5), None, Some(6), Some(8), Some(3), Some(1))
 
   def goal(s: State[EightMove]) = s.asInstanceOf[EightGame].pos == goalSeq
 
@@ -26,7 +27,7 @@ object MainEight extends App {
   val plan = Planner.plan[EightMove](EightGame(initState), goal, heuristic)
 
   if (plan.isEmpty)
-    println("No plan")
+    logger.info("No plan")
   else
-    println(plan.get.mkString("\n"))
+    logger.info(plan.get.mkString("\n"))
 }

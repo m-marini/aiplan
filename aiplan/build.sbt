@@ -10,10 +10,12 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "aiplan",
-    libraryDependencies ++= Seq(
-    	"com.github.scala-incubator.io" % s"scala-io-file_$scalaToolVersion" % "0.4.3-1",
-    	"org.scalatest" % s"scalatest_$scalaToolVersion" % "2.2.2" % Test,
-		"org.scalamock" % s"scalamock-core_$scalaToolVersion" % "3.1.2" % Test,
-		"org.scalacheck" % s"scalacheck_$scalaToolVersion" % "1.11.6" % Test
-	)
+
+    libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.3-1",
+	libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
+	libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.2",
+	
+	libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.2" % Test,
+	libraryDependencies += "org.scalamock" %% "scalamock-core" % "3.1.2" % Test,
+	libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.6" % Test
   )
