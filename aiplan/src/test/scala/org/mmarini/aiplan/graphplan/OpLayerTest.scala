@@ -9,8 +9,8 @@ import org.scalatest.Matchers
 class OpLayerTest extends FunSpec with Matchers {
   describe("When a planing problem with (a,b) proposition set and (nop,change) operator set") {
 
-    val a = Proposition("a")
-    val b = Proposition("b")
+    val a: Proposition = "a"
+    val b: Proposition = "b"
     val props = Set(a, b)
 
     def nop(p: Proposition) = Operator(Set(p), Set(p), Set())

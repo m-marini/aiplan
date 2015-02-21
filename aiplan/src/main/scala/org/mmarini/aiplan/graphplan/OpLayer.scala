@@ -17,7 +17,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
     val props = nextProps
     val map = mapPropOp
     def isPropMutex(p1: Proposition, p2: Proposition) =
-      combination(mapPropOp(p1), mapPropOp(p2)).exists(mutex.contains)
+      combination(mapPropOp(p1), mapPropOp(p2)).forall(mutex.contains)
     combination(props).filter {
       case (a, b) => isPropMutex(a, b)
     }

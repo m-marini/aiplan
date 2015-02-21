@@ -35,18 +35,20 @@ object DWRProblem {
     def at(l: Location): Proposition = s"$id.at(${l.id})"
   }
 
-  object robotR extends Robot("R")
-  object robotQ extends Robot("Q")
+  def nop(p: Proposition) = Operator(Set(p), Set(p), Set())
 
-  object location1 extends Location("1")
-  object location2 extends Location("2")
+  object R extends Robot("R")
+  object Q extends Robot("Q")
 
-  object containerA extends Container("A")
-  object containerB extends Container("B")
+  object L1 extends Location("1")
+  object L2 extends Location("2")
 
-  val robots = Set(robotR, robotQ)
-  val locations = Set(location1, location2)
-  val containers = Set(containerA, containerB)
+  object A extends Container("A")
+  object B extends Container("B")
+
+  val robots = Set(R, Q)
+  val locations = Set(L1, L2)
+  val containers = Set(A, B)
 
   val states = (for {
     r <- robots
@@ -78,17 +80,17 @@ object DWRProblem {
       r <- robots
       l <- locations
     } yield r.unload(c, l)) ++
-    states.map(p => Operator(Set(p), Set(p), Set()))
+    states.map(nop)
 
   val problem = PlanProblem(
-    State(Set(robotR.at(location1),
-      robotQ.at(location2),
-      containerA.at(location1),
-      containerB.at(location2),
-      robotR.unloaded,
-      robotQ.unloaded)),
+    State(Set(R.at(L1),
+      Q.at(L2),
+      A.at(L1),
+      B.at(L2),
+      R.unloaded,
+      Q.unloaded)),
     State(Set(
-      containerA.at(location2),
-      containerB.at(location1))),
+      A.at(L2),
+      B.at(L1))),
     ops)
 }
