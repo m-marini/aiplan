@@ -23,7 +23,7 @@ class StateLayerTest extends FunSpec with Matchers {
       } yield change(p1, p2))
 
     describe("the next state layer of initial state (a)") {
-      val init = State(Set(a))
+      val init = Set(a)
       val l1 = new StateLayer(init).next(ops)
       it("should contain ops {nop(a), change(a,b)}") {
         l1.ops should contain theSameElementsAs Set(nop(a), change(a, b))

@@ -1,5 +1,7 @@
 package org.mmarini.aiplan.graphplan
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Op
+
 /**
  *
  */
@@ -8,7 +10,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
   /**
    *
    */
-  def next: StateLayer = StateLayer(State(nextProps), nextMutex)
+  def next: StateLayer = StateLayer(nextProps, nextMutex)
 
   /**
    *
@@ -38,5 +40,15 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
         case (p, op) => op
       })
     }
+
+  /**
+   *
+   */
+  def providers(p: Proposition): Set[Operator] = ops.filter(_.addEffects.contains(p))
+
+  /**
+   *
+   */
+  override def toString = s"{${ops.mkString(" ")}}"
 
 }

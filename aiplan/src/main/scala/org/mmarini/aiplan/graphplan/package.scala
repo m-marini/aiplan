@@ -20,4 +20,6 @@ package object graphplan {
    *
    */
   implicit def StringToProps(id: String) = StringProposition(id)
+
+  type State = Set[Proposition]
 }

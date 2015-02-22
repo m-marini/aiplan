@@ -83,14 +83,14 @@ object DWRProblem {
     states.map(nop)
 
   val problem = PlanProblem(
-    State(Set(R.at(L1),
+    Set(R.at(L1),
       Q.at(L2),
       A.at(L1),
       B.at(L2),
       R.unloaded,
-      Q.unloaded)),
-    State(Set(
+      Q.unloaded),
+    Set(
       A.at(L2),
-      B.at(L1))),
+      B.at(L1)),
     ops)
 }

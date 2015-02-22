@@ -14,7 +14,7 @@ class DWRProblemTest extends FunSpec with Matchers {
       val l0 = new StateLayer(problem.init)
 
       it("should contain props {R.at(1), Q.at(2), A.at(1), B.at(2), R.unloaded, Q.unloaded}") {
-        l0.state.propositions should contain theSameElementsAs Set(
+        l0.state should contain theSameElementsAs Set(
           R.at(L1),
           Q.at(L2),
           A.at(L1),
@@ -78,7 +78,7 @@ class DWRProblemTest extends FunSpec with Matchers {
           val sl1 = al1.next
 
           it("should contain props {R.at(1), Q.at(2), A.at(1), B.at(2), R.unloaded, Q.unloaded, R.at(2), Q.at(1), A.on(R), B.on(Q)}") {
-            sl1.state.propositions should contain theSameElementsAs Set(
+            sl1.state should contain theSameElementsAs Set(
               R.at(L1),
               R.at(L2),
               Q.at(L1),
@@ -148,21 +148,21 @@ class DWRProblemTest extends FunSpec with Matchers {
             describe("the second proposition layer") {
               val sl2 = al2.next
               it("should contain 12 ops") {
-                sl2.state.propositions should have size (12)
+                sl2.state should have size (12)
               }
               it("should contain ops R.move(1,2) ...") {
-                sl2.state.propositions should contain(R.at(L1))
-                sl2.state.propositions should contain(R.at(L2))
-                sl2.state.propositions should contain(Q.at(L1))
-                sl2.state.propositions should contain(Q.at(L2))
-                sl2.state.propositions should contain(A.at(L1))
-                sl2.state.propositions should contain(A.on(R))
-                sl2.state.propositions should contain(A.on(Q))
-                sl2.state.propositions should contain(B.at(L2))
-                sl2.state.propositions should contain(B.on(Q))
-                sl2.state.propositions should contain(B.on(R))
-                sl2.state.propositions should contain(R.unloaded)
-                sl2.state.propositions should contain(Q.unloaded)
+                sl2.state should contain(R.at(L1))
+                sl2.state should contain(R.at(L2))
+                sl2.state should contain(Q.at(L1))
+                sl2.state should contain(Q.at(L2))
+                sl2.state should contain(A.at(L1))
+                sl2.state should contain(A.on(R))
+                sl2.state should contain(A.on(Q))
+                sl2.state should contain(B.at(L2))
+                sl2.state should contain(B.on(Q))
+                sl2.state should contain(B.on(R))
+                sl2.state should contain(R.unloaded)
+                sl2.state should contain(Q.unloaded)
               }
               describe("the third action layer") {
                 val al3 = sl2.next(ops)
@@ -194,23 +194,23 @@ class DWRProblemTest extends FunSpec with Matchers {
                 describe("the second proposition layer") {
                   val sl3 = al3.next
                   it("should contain 14 ops") {
-                    sl3.state.propositions should have size (14)
+                    sl3.state should have size (14)
                   }
                   it("should contain ops R.move(1,2) ...") {
-                    sl3.state.propositions should contain(R.at(L1))
-                    sl3.state.propositions should contain(R.at(L2))
-                    sl3.state.propositions should contain(Q.at(L1))
-                    sl3.state.propositions should contain(Q.at(L2))
-                    sl3.state.propositions should contain(A.at(L1))
-                    sl3.state.propositions should contain(A.at(L2))
-                    sl3.state.propositions should contain(A.on(R))
-                    sl3.state.propositions should contain(A.on(Q))
-                    sl3.state.propositions should contain(B.at(L1))
-                    sl3.state.propositions should contain(B.at(L2))
-                    sl3.state.propositions should contain(B.on(Q))
-                    sl3.state.propositions should contain(B.on(R))
-                    sl3.state.propositions should contain(R.unloaded)
-                    sl3.state.propositions should contain(Q.unloaded)
+                    sl3.state should contain(R.at(L1))
+                    sl3.state should contain(R.at(L2))
+                    sl3.state should contain(Q.at(L1))
+                    sl3.state should contain(Q.at(L2))
+                    sl3.state should contain(A.at(L1))
+                    sl3.state should contain(A.at(L2))
+                    sl3.state should contain(A.on(R))
+                    sl3.state should contain(A.on(Q))
+                    sl3.state should contain(B.at(L1))
+                    sl3.state should contain(B.at(L2))
+                    sl3.state should contain(B.on(Q))
+                    sl3.state should contain(B.on(R))
+                    sl3.state should contain(R.unloaded)
+                    sl3.state should contain(Q.unloaded)
                   }
                 }
               }

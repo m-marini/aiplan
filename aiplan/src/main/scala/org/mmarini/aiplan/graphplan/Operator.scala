@@ -5,20 +5,20 @@ import com.sun.tracing.Probe
 /**
  *
  */
-case class Operator(preconditions: Set[Proposition], addEffects: Set[Proposition], delEffects: Set[Proposition]) {
+case class Operator(preconditions: State, addEffects: State, delEffects: State) {
   /**
    *
    */
   def apply(state: State): State = {
     require(isApplicable(state))
-    State(state.propositions -- delEffects ++ addEffects)
+    state -- delEffects ++ addEffects
   }
 
   /**
    *
    */
   def isApplicable(state: State): Boolean =
-    state.contains(preconditions)
+    preconditions.subsetOf(state)
 
   /**
    *

@@ -33,4 +33,20 @@ case class StateLayer(state: State, mutex: Set[(Proposition, Proposition)]) exte
     val mutexOp = combination(appOps).filter { case (a, b) => a.isMutex(b, mutex) }
     OpLayer(appOps, mutexOp)
   }
+
+  /**
+   *
+   */
+  def isSameLayer(other: StateLayer) =
+    state.size == other.state.size && mutex.size == other.mutex.size
+
+  /**
+   *
+   */
+  def contains(other: State) = other.subsetOf(state) && combination(other).forall(!mutex.contains(_))
+
+  /**
+   * 
+   */
+  override def toString = s"{${state.mkString(" ")}}"
 }

@@ -23,7 +23,7 @@ class OpLayerTest extends FunSpec with Matchers {
       } yield change(p1, p2))
 
     describe("the first action layer from (a)") {
-      val init = State(Set(a))
+      val init = Set(a)
       val l1 = new StateLayer(init).next(ops)
 
       it("should contain nextProps {a, b}") {
@@ -39,7 +39,7 @@ class OpLayerTest extends FunSpec with Matchers {
       describe("the next state layer of first action layer from (a)") {
         val l2 = new StateLayer(init).next(ops).next
         it("should contain props {a, b}") {
-          l2.state.propositions should contain theSameElementsAs Set(a, b)
+          l2.state should contain theSameElementsAs Set(a, b)
         }
         it("should contain mutex {(a, b), (b, a)}") {
           l2.mutex should contain theSameElementsAs Set((a, b), (b, a))
