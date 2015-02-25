@@ -5,10 +5,8 @@ import com.typesafe.scalalogging.LazyLogging
 /**
  *
  */
-class Planner(problem: PlanProblem) extends LazyLogging {
+class GraphPlanner(problem: PlanProblem) extends LazyLogging {
 
-  type PartialPlan = Set[Operator]
-  type Plan = List[PartialPlan]
   type StateSet = Set[State]
   type StateSetList = List[StateSet]
   type Layer = (StateLayer, Option[OpLayer])
@@ -17,7 +15,7 @@ class Planner(problem: PlanProblem) extends LazyLogging {
   /**
    * Crate a plan for the given problem
    */
-  def plan(problem: PlanProblem): Option[Plan] = expandToGoal match {
+  def plan: Option[Plan] = expandToGoal match {
     case None => None
     case Some(initGraph) => search(initGraph, initGraph.map(_ => Set[State]()))._1
   }

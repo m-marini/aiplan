@@ -22,4 +22,8 @@ package object graphplan {
   implicit def StringToProps(id: String) = StringProposition(id)
 
   type State = Set[Proposition]
+    
+  type PartialPlan = Set[Operator]
+  type Plan = List[PartialPlan]
+
 }

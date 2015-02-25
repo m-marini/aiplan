@@ -1,0 +1,86 @@
+package org.mmarini.aiplan.graphplan
+
+import com.typesafe.scalalogging.LazyLogging
+
+/**
+ *
+ */
+class FFHeuristic(problem: PlanProblem) extends LazyLogging {
+
+  type Layer = (State, PartialPlan)
+  type GraphPlan = List[Layer]
+
+  /**
+   * Estimate the distance of problem using FF algorithm
+   */
+  def distance: Int = {
+    val rpg = expandRPG(List((problem.init, Set())))
+    val fog = computeFOG(rpg)
+    extractRPSize(fog)
+  }
+
+  /**
+   * Expand the reduced plan graph 
+   */
+  def expandRPG(graph: GraphPlan): GraphPlan = {
+    val (stateLayer, _) = graph.head
+    if (problem.goal.subsetOf(stateLayer)) graph
+    else {
+      val opLayer = problem.ops.filter(_.preconditions.subsetOf(stateLayer))
+      val next = opLayer.flatMap(_.addEffects)
+      if (next.size == stateLayer.size) Nil
+      else expandRPG((next, opLayer) :: graph)
+    }
+  }
+
+  /**
+   * Compute the first only plan graph
+   */
+  def computeFOG(graph: GraphPlan): GraphPlan = {
+    val reverse = graph.reverse
+    reduceFirstLayer(List(reverse.head), reverse, problem.goal)._1
+  }
+
+  /**
+   * Reduce the reduced plan graph to first only plan graph
+   */
+  def reduceFirstLayer(flg: GraphPlan, rpg: GraphPlan, goal: State): (GraphPlan, GraphPlan, State) =
+    if (goal.isEmpty || rpg.size <= 1)
+      (flg, rpg, goal)
+    else {
+      val (sl0, al0) = rpg.head
+      val (sl1, al1) = rpg(1)
+      val fl = (sl1.diff(sl0), al1.diff(al0))
+      val ng = goal.diff(fl._1)
+      reduceFirstLayer(fl :: flg, rpg.tail, ng)
+    }
+
+  /**
+   * extract the size of reduced plan by rpg
+   */
+  def extractRPSize(plan: GraphPlan): Int = {
+    val layers = plan.map {
+      case (s, o) => (s, o, s.intersect(problem.goal))
+    }
+    extractPlan(Set(), layers)._1.size
+  }
+
+  /**
+   * Extract the plan by first only plan and goal layers 
+   */
+  def extractPlan(plan: PartialPlan, layers: List[(State, PartialPlan, State)]): (PartialPlan, List[(State, PartialPlan, State)]) =
+    if (layers.isEmpty)
+      (plan, layers)
+    else {
+      val (states, ops, goals) = layers.head
+      val selOps = goals.map(prop => ops.find(_.addEffects.contains(prop))).filterNot(_.isEmpty).map(_.get)
+      val npl = selOps ++ plan
+      val newGoals = selOps.map(_.preconditions).flatten
+      val newLayers = layers.tail.map {
+        case (s, o, g) => {
+          (s, o, g ++ (newGoals.intersect(s)))
+        }
+      }
+      extractPlan(npl, newLayers)
+    }
+}

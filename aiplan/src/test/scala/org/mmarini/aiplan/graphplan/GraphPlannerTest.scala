@@ -9,7 +9,7 @@ import org.scalatest.Matchers
 class PlannerTest extends FunSpec with Matchers {
   describe("Defined the DWR Problem and a planner") {
     import DWRProblem._
-    val planner = new Planner(problem)
+    val planner = new GraphPlanner(problem)
 
     describe("the first layer seq") {
       val initGraphOpt = planner.expandToGoal
