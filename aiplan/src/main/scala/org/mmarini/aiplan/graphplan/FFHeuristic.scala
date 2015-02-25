@@ -13,14 +13,14 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
   /**
    * Estimate the distance of problem using FF algorithm
    */
-  def distance: Int = {
+  def distance: Double = {
     val rpg = expandRPG(List((problem.init, Set())))
     val fog = computeFOG(rpg)
     extractRPSize(fog)
   }
 
   /**
-   * Expand the reduced plan graph 
+   * Expand the reduced plan graph
    */
   def expandRPG(graph: GraphPlan): GraphPlan = {
     val (stateLayer, _) = graph.head
@@ -56,17 +56,17 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
     }
 
   /**
-   * extract the size of reduced plan by rpg
+   * extract the cost of reduced plan by rpg
    */
-  def extractRPSize(plan: GraphPlan): Int = {
+  def extractRPSize(plan: GraphPlan): Double = {
     val layers = plan.map {
       case (s, o) => (s, o, s.intersect(problem.goal))
     }
-    extractPlan(Set(), layers)._1.size
+    extractPlan(Set(), layers)._1.map(_.cost).sum
   }
 
   /**
-   * Extract the plan by first only plan and goal layers 
+   * Extract the plan by first only plan and goal layers
    */
   def extractPlan(plan: PartialPlan, layers: List[(State, PartialPlan, State)]): (PartialPlan, List[(State, PartialPlan, State)]) =
     if (layers.isEmpty)

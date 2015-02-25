@@ -25,5 +25,6 @@ package object graphplan {
     
   type PartialPlan = Set[Operator]
   type Plan = List[PartialPlan]
+  type OrderedPlan = List[Operator]
 
 }

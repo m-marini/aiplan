@@ -5,7 +5,7 @@ import com.sun.tracing.Probe
 /**
  *
  */
-case class Operator(preconditions: State, addEffects: State, delEffects: State) {
+case class Operator(preconditions: State, addEffects: State, delEffects: State, cost: Double = 1.0) {
   /**
    *
    */

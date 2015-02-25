@@ -17,7 +17,15 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
    */
   def plan: Option[Plan] = expandToGoal match {
     case None => None
-    case Some(initGraph) => search(initGraph, initGraph.map(_ => Set[State]()))._1
+    case Some(initGraph) => {
+      search(initGraph, initGraph.map(_ => Set[State]())) match {
+        case (None, _, _) => None
+        case (Some(plan), _, _) => {
+          Some(plan.map(_.filterNot(a => a.preconditions == a.addEffects && a.delEffects.isEmpty)).reverse)
+        }
+      }
+
+    }
   }
 
   /**

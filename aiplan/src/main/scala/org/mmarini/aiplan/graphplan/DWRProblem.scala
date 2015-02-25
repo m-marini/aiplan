@@ -35,7 +35,7 @@ object DWRProblem {
     def at(l: Location): Proposition = s"$id.at(${l.id})"
   }
 
-  def nop(p: Proposition) = Operator(Set(p), Set(p), Set())
+  def nop(p: Proposition) = Operator(Set(p), Set(p), Set(), 0.0)
 
   object R extends Robot("R")
   object Q extends Robot("Q")

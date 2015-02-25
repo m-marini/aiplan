@@ -6,7 +6,7 @@ import org.scalatest.Matchers
 /**
  *
  */
-class PlannerTest extends FunSpec with Matchers {
+class GraphPlannerTest extends FunSpec with Matchers {
   describe("Defined the DWR Problem and a planner") {
     import DWRProblem._
     val planner = new GraphPlanner(problem)
