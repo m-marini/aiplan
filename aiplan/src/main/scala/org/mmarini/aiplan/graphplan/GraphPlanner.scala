@@ -60,7 +60,8 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
    */
   def expandNextLayer(graph: PlanGraph): PlanGraph = {
     val ol = graph.head._1.next(problem.ops)
-    (ol.next, Some(ol)) :: graph
+    val sl = ol.next
+    (sl, Some(ol)) :: graph
   }
 
   /**
@@ -148,9 +149,13 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
 
       // Filter out the operator mutex with any other operators in the plan
       val ops = if (plan.isEmpty) ops1
-      else ops1.filter(op => {
-        val inter = plan.map((op, _)).intersect(opLayer.mutex)
-        inter.isEmpty
+      //      else ops1.filter(op => {
+      //        val inter = plan.map((op, _)).intersect(opLayer.mutex)
+      //        inter.isEmpty
+      //      })
+      else ops1.filterNot(op => {
+        val oo = plan.map((op, _))
+        oo.exists(opLayer.mutex)
       })
       logger.debug(s"         filtered operation set={${ops.mkString(" ")}}")
 

@@ -19,3 +19,8 @@ E' utile nella backward search usare un grafo che contiene solo le operazioni e 
 Questo grafo si può ottenere mantenendo solo le differenze tra i vari layer
 
 
+## Test case
+
+Prendiamo il seguente problema:
+
+

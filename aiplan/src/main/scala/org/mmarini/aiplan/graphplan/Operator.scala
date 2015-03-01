@@ -21,25 +21,35 @@ case class Operator(preconditions: State, addEffects: State, delEffects: State, 
     preconditions.subsetOf(state)
 
   /**
-   *
+   * Two operators are indipendent iff:
+   * - any negative effects of op1 are neither in preconditions nor positive effects of op2 and
+   * - any negative effects of op2 are neither in preconditions and positive effects of op1
+   * or in other word
+   * - not exists any negative effects of op1 that is a precondition or a positive effect of op2 and
+   * - not exists any negative effects of op2 that is a precondition or a positive effect of op1 and
    */
-  def isIndipendent(op: Operator): Boolean =
-    delEffects.intersect(op.addEffects.union(op.preconditions)).isEmpty &&
-      op.delEffects.intersect(addEffects.union(preconditions)).isEmpty
+  def isIndipendent(op: Operator): Boolean = {
+    val p1 = addEffects.union(preconditions)
+    if (op.delEffects.exists(p1.contains)) false
+    else {
+      val p2 = op.addEffects.union(op.preconditions)
+      !delEffects.exists(p2.contains)
+    }
+  }
 
   /**
    *
    */
-  def isMutex(op: Operator, mutex: Set[(Proposition, Proposition)]): Boolean = !isIndipendent(op) ||
-    !((for {
-      a1 <- preconditions
-      a2 <- op.preconditions
-    } yield (a1, a2)).forall {
-      case (a1, a2) => !(mutex.contains((a1, a2)) || mutex.contains((a2, a1)))
-    })
+  //  override def toString = s"(+{${addEffects.mkString(" ")}}, -{${delEffects.mkString(" ")}}, ?{${preconditions.mkString(" ")}})"
+  override def toString = s"{${addEffects.mkString(" ")}}"
+}
 
+/**
+ *
+ */
+object Operator {
   /**
    *
    */
-  override def toString = s"(+{${addEffects.mkString(" ")}}, -{${delEffects.mkString(" ")}}, ?{${preconditions.mkString(" ")}})"
+  def apply(p: Proposition): Operator = Operator(Set(p), Set(p), Set(), 0.0)
 }

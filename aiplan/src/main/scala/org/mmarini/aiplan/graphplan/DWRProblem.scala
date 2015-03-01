@@ -35,8 +35,6 @@ object DWRProblem {
     def at(l: Location): Proposition = s"$id.at(${l.id})"
   }
 
-  def nop(p: Proposition) = Operator(Set(p), Set(p), Set(), 0.0)
-
   object R extends Robot("R")
   object Q extends Robot("Q")
 
@@ -80,7 +78,7 @@ object DWRProblem {
       r <- robots
       l <- locations
     } yield r.unload(c, l)) ++
-    states.map(nop)
+    states.map(Operator(_))
 
   val problem = PlanProblem(
     Set(R.at(L1),

@@ -31,12 +31,12 @@ class DWRProblemTest extends FunSpec with Matchers {
             Q.move(L2, L1),
             R.load(A, L1),
             Q.load(B, L2),
-            nop(R.at(L1)),
-            nop(Q.at(L2)),
-            nop(A.at(L1)),
-            nop(B.at(L2)),
-            nop(R.unloaded),
-            nop(Q.unloaded))
+            Operator(R.at(L1)),
+            Operator(Q.at(L2)),
+            Operator(A.at(L1)),
+            Operator(B.at(L2)),
+            Operator(R.unloaded),
+            Operator(Q.unloaded))
         }
         it("should contain mutex with size 16") {
           al1.mutex should have size (16)
@@ -50,28 +50,28 @@ class DWRProblemTest extends FunSpec with Matchers {
           al1.mutex should contain(Q.load(B, L2), Q.move(L2, L1))
         }
         it("should contain mutex {R.move(1,2), nop(R.at(1)}") {
-          al1.mutex should contain(R.move(L1, L2), nop(R.at(L1)))
-          al1.mutex should contain(nop(R.at(L1)), R.move(L1, L2))
+          al1.mutex should contain(R.move(L1, L2), Operator(R.at(L1)))
+          al1.mutex should contain(Operator(R.at(L1)), R.move(L1, L2))
         }
         it("should contain mutex {Q.move(2,1), nop(Q.at(2)}") {
-          al1.mutex should contain(Q.move(L2, L1), nop(Q.at(L2)))
-          al1.mutex should contain(nop(Q.at(L2)), Q.move(L2, L1))
+          al1.mutex should contain(Q.move(L2, L1), Operator(Q.at(L2)))
+          al1.mutex should contain(Operator(Q.at(L2)), Q.move(L2, L1))
         }
         it("should contain mutex {R.load(A,1), nop(R.unloaded}") {
-          al1.mutex should contain(R.load(A, L1), nop(R.unloaded))
-          al1.mutex should contain(nop(R.unloaded), R.load(A, L1))
+          al1.mutex should contain(R.load(A, L1), Operator(R.unloaded))
+          al1.mutex should contain(Operator(R.unloaded), R.load(A, L1))
         }
         it("should contain mutex {Q.load(B,2), nop(Q.unloaded}") {
-          al1.mutex should contain(Q.load(B, L2), nop(Q.unloaded))
-          al1.mutex should contain(nop(Q.unloaded), Q.load(B, L2))
+          al1.mutex should contain(Q.load(B, L2), Operator(Q.unloaded))
+          al1.mutex should contain(Operator(Q.unloaded), Q.load(B, L2))
         }
         it("should contain mutex {R.load(A,1), nop(A.at(1))}") {
-          al1.mutex should contain(R.load(A, L1), nop(A.at(L1)))
-          al1.mutex should contain(nop(A.at(L1)), R.load(A, L1))
+          al1.mutex should contain(R.load(A, L1), Operator(A.at(L1)))
+          al1.mutex should contain(Operator(A.at(L1)), R.load(A, L1))
         }
         it("should contain mutex {Q.load(B,2), nop(B.at(2))}") {
-          al1.mutex should contain(Q.load(B, L2), nop(B.at(L2)))
-          al1.mutex should contain(nop(B.at(L2)), Q.load(B, L2))
+          al1.mutex should contain(Q.load(B, L2), Operator(B.at(L2)))
+          al1.mutex should contain(Operator(B.at(L2)), Q.load(B, L2))
         }
 
         describe("the first state layer") {
@@ -134,16 +134,16 @@ class DWRProblemTest extends FunSpec with Matchers {
               al2.ops should contain(Q.load(B, L2))
               al2.ops should contain(R.unload(A, L1))
               al2.ops should contain(Q.unload(B, L2))
-              al2.ops should contain(nop(R.at(L1)))
-              al2.ops should contain(nop(R.at(L2)))
-              al2.ops should contain(nop(Q.at(L1)))
-              al2.ops should contain(nop(Q.at(L2)))
-              al2.ops should contain(nop(R.unloaded))
-              al2.ops should contain(nop(Q.unloaded))
-              al2.ops should contain(nop(A.at(L1)))
-              al2.ops should contain(nop(A.on(R)))
-              al2.ops should contain(nop(B.at(L2)))
-              al2.ops should contain(nop(B.on(Q)))
+              al2.ops should contain(Operator(R.at(L1)))
+              al2.ops should contain(Operator(R.at(L2)))
+              al2.ops should contain(Operator(Q.at(L1)))
+              al2.ops should contain(Operator(Q.at(L2)))
+              al2.ops should contain(Operator(R.unloaded))
+              al2.ops should contain(Operator(Q.unloaded))
+              al2.ops should contain(Operator(A.at(L1)))
+              al2.ops should contain(Operator(A.on(R)))
+              al2.ops should contain(Operator(B.at(L2)))
+              al2.ops should contain(Operator(B.on(Q)))
             }
             describe("the second proposition layer") {
               val sl2 = al2.next
@@ -180,16 +180,16 @@ class DWRProblemTest extends FunSpec with Matchers {
                   al3.ops should contain(Q.load(B, L2))
                   al3.ops should contain(R.unload(A, L1))
                   al3.ops should contain(Q.unload(B, L2))
-                  al3.ops should contain(nop(R.at(L1)))
-                  al3.ops should contain(nop(R.at(L2)))
-                  al3.ops should contain(nop(Q.at(L1)))
-                  al3.ops should contain(nop(Q.at(L2)))
-                  al3.ops should contain(nop(R.unloaded))
-                  al3.ops should contain(nop(Q.unloaded))
-                  al3.ops should contain(nop(A.at(L1)))
-                  al3.ops should contain(nop(A.on(R)))
-                  al3.ops should contain(nop(B.at(L2)))
-                  al3.ops should contain(nop(B.on(Q)))
+                  al3.ops should contain(Operator(R.at(L1)))
+                  al3.ops should contain(Operator(R.at(L2)))
+                  al3.ops should contain(Operator(Q.at(L1)))
+                  al3.ops should contain(Operator(Q.at(L2)))
+                  al3.ops should contain(Operator(R.unloaded))
+                  al3.ops should contain(Operator(Q.unloaded))
+                  al3.ops should contain(Operator(A.at(L1)))
+                  al3.ops should contain(Operator(A.on(R)))
+                  al3.ops should contain(Operator(B.at(L2)))
+                  al3.ops should contain(Operator(B.on(Q)))
                 }
                 describe("the second proposition layer") {
                   val sl3 = al3.next
