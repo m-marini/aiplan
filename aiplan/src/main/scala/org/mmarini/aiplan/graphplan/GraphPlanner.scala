@@ -1,6 +1,7 @@
 package org.mmarini.aiplan.graphplan
 
 import com.typesafe.scalalogging.LazyLogging
+import scala.annotation.tailrec
 
 /**
  *
@@ -67,7 +68,8 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
   /**
    * search and expand the graph until a plan is found or no plan are available
    */
-  def search(graph: PlanGraph, noGoodTable: StateSetList): (Option[Plan], PlanGraph, StateSetList) =
+  @tailrec
+  final def search(graph: PlanGraph, noGoodTable: StateSetList): (Option[Plan], PlanGraph, StateSetList) =
     extractPlan(graph, noGoodTable) match {
       // check for found plan
       case (Some(plan), newNoGoodTable) => (Some(plan), graph, newNoGoodTable)

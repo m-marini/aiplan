@@ -4,6 +4,7 @@
 package org.mmarini.aiplan.graphplan
 
 import com.typesafe.scalalogging.LazyLogging
+import scala.annotation.tailrec
 
 /**
  * @author us00852
@@ -56,7 +57,8 @@ class AStarPlanner(problem: PlanProblem, heuristic: (PlanProblem) => Double) ext
    * The fringe contains the map between the state and the graph node that have to be explored
    * The visited contains the already explored state
    */
-  def best(n: Int, fringe: Map[State, Node], visited: Set[State]): (Int, Option[Node]) =
+  @tailrec
+  final def best(n: Int, fringe: Map[State, Node], visited: Set[State]): (Int, Option[Node]) =
     if (fringe.isEmpty)
       (n, None)
     else {
@@ -85,6 +87,7 @@ class AStarPlanner(problem: PlanProblem, heuristic: (PlanProblem) => Double) ext
          *  Merge a map state, search node with a list of node.
          *  In case of duplicate node it keeps the shorter from initial state
          */
+        @tailrec
         def merge(map: Map[State, Node], nodes: Set[Node]): Map[State, Node] =
           if (nodes.isEmpty)
             map

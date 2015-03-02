@@ -1,6 +1,7 @@
 package org.mmarini.aiplan.graphplan
 
 import com.typesafe.scalalogging.LazyLogging
+import scala.annotation.tailrec
 
 /**
  *
@@ -22,7 +23,8 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
   /**
    * Expand the reduced plan graph
    */
-  def expandRPG(graph: GraphPlan): GraphPlan = {
+  @tailrec
+  final def expandRPG(graph: GraphPlan): GraphPlan = {
     val (stateLayer, _) = graph.head
     if (problem.goal.subsetOf(stateLayer)) graph
     else {
@@ -44,7 +46,8 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
   /**
    * Reduce the reduced plan graph to first only plan graph
    */
-  def reduceFirstLayer(flg: GraphPlan, rpg: GraphPlan, goal: State): (GraphPlan, GraphPlan, State) =
+  @tailrec
+  final def reduceFirstLayer(flg: GraphPlan, rpg: GraphPlan, goal: State): (GraphPlan, GraphPlan, State) =
     if (goal.isEmpty || rpg.size <= 1)
       (flg, rpg, goal)
     else {
@@ -68,7 +71,8 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
   /**
    * Extract the plan by first only plan and goal layers
    */
-  def extractPlan(plan: PartialPlan, layers: List[(State, PartialPlan, State)]): (PartialPlan, List[(State, PartialPlan, State)]) =
+  @tailrec
+  final def extractPlan(plan: PartialPlan, layers: List[(State, PartialPlan, State)]): (PartialPlan, List[(State, PartialPlan, State)]) =
     if (layers.isEmpty)
       (plan, layers)
     else {
