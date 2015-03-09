@@ -59,7 +59,7 @@ case class StateLayer(state: State, mutex: Set[(Proposition, Proposition)]) exte
    *
    */
   def isSameLayer(other: StateLayer) =
-    state.size == other.state.size && mutex.size == other.mutex.size
+    state == other.state && mutex == other.mutex
 
   /**
    * A state layer contains a state if

@@ -13,7 +13,7 @@ class OpLayerTest extends FunSpec with Matchers {
     val b: Proposition = "b"
     val props = Set(a, b)
 
-    def nop(p: Proposition) = Operator(Set(p), Set(p), Set())
+    def nop(p: Proposition) = Operator(Set(p), Set(p))
     def change(from: Proposition, to: Proposition) = Operator(Set(from), Set(to), Set(from))
 
     def ops = (for (p <- props) yield nop(p)) ++
