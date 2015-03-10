@@ -61,37 +61,45 @@ object YAAAFAProblem {
 
   val dependencies = Set("IFG", "PRE", "UTL", "XPI", "XAS").map(DependencyApp)
 
-  object AFA extends AppModule("AFA") {
+  object Tests extends Entity {
+    val performanceTestPassed: Proposition = s"Performance test has passed"
 
-    def offLoaded: Proposition = s"$id offloaded"
+    val functionalTestPassed: Proposition = s"Functional test has passed"
 
-    def tested: Proposition = s"$id tested"
+    val uatTestPassed: Proposition = s"User acceptance test has passed"
 
-    override def build = Operator(
-      Set(offLoaded),
-      Set(built),
-      id = s"build $id")
+    val allTestPassed: Proposition = "All tests have passed"
 
-    def offLoad = Operator(
+    val checkForTests = Operator(
+      Set(performanceTestPassed, functionalTestPassed, uatTestPassed),
+      Set(allTestPassed),
+      id = "final check for tests")
+
+    val runPerformanceTest = Operator(
+      Set(functionalTestPassed),
+      Set(performanceTestPassed),
+      id = "run performance test")
+
+    val runFunctionalTest = Operator(
       Set(),
-      Set(offLoaded),
-      id = s"offLoad $id")
+      Set(functionalTestPassed),
+      id = "run functional test")
 
-    def runTest = Operator(
-      dependencies.map(_.deployed(testEnv)) + deployed(testEnv),
-      Set(tested),
-      id = s"test $id")
+    val runUATest = Operator(
+      Set(functionalTestPassed),
+      Set(uatTestPassed),
+      id = "run user acceptance test")
 
-    override def props = super.props + offLoaded + tested
+    val props = Set(performanceTestPassed, functionalTestPassed, uatTestPassed, allTestPassed)
 
-    override val ops = props.map(Operator.apply) ++ super.ops + build + offLoad + runTest
+    val ops = props.map(Operator.apply) + checkForTests + runFunctionalTest + runPerformanceTest + runUATest
   }
 
-  val goal = Set[Proposition](AFA.tested)
+  val goal = Set[Proposition](Tests.allTestPassed)
 
-  val init = runtimes.map(_.init).flatten ++ dependencies.map(_.init).flatten ++ AFA.init
+  val init = Set[Proposition]()
 
-  val ops = runtimes.map(_.ops).flatten ++ dependencies.map(_.ops).flatten ++ AFA.ops
+  val ops = Tests.ops
 
   val problem = PlanProblem(init, goal, ops)
 }

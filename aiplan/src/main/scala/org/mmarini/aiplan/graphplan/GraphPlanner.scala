@@ -169,8 +169,9 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
           if (ops.isEmpty)
             return (None, noGoodTable)
           else {
-            // Select the first operator
-            val op = ops.head
+            // Select the operator with lower cost
+            val sorted = ops.toList.sortWith(_.cost <= _.cost)
+            val op = sorted.head
             logger.debug(s"         Selected op $op")
             // create the new goal removing all precondition from the goal
             val ng = goal -- op.addEffects
