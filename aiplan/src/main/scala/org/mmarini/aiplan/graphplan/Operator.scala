@@ -5,35 +5,35 @@ import com.sun.tracing.Probe
 /**
  *
  */
-case class Operator(preconditions: State, addEffects: State, delEffects: State, descr: String, cost: Double = 1.0) {
+case class Operator(requirements: State, assertions: State, denials: State, descr: String, cost: Double = 1.0) {
   /**
    *
    */
   def apply(state: State): State = {
     require(isApplicable(state))
-    state -- delEffects ++ addEffects
+    state -- denials ++ assertions
   }
 
   /**
    *
    */
   def isApplicable(state: State): Boolean =
-    preconditions.subsetOf(state)
+    requirements.subsetOf(state)
 
   /**
    * Two operators are indipendent iff:
-   * - any negative effects of op1 are neither in preconditions nor positive effects of op2 and
-   * - any negative effects of op2 are neither in preconditions and positive effects of op1
+   * - any negative effects of op1 are neither in requirements nor positive effects of op2 and
+   * - any negative effects of op2 are neither in requirements and positive effects of op1
    * or in other word
    * - not exists any negative effects of op1 that is a precondition or a positive effect of op2 and
    * - not exists any negative effects of op2 that is a precondition or a positive effect of op1 and
    */
   def isIndipendent(op: Operator): Boolean = {
-    val p1 = addEffects.union(preconditions)
-    if (op.delEffects.exists(p1.contains)) false
+    val p1 = assertions.union(requirements)
+    if (op.denials.exists(p1.contains)) false
     else {
-      val p2 = op.addEffects.union(op.preconditions)
-      !delEffects.exists(p2.contains)
+      val p2 = op.assertions.union(op.requirements)
+      !denials.exists(p2.contains)
     }
   }
 
@@ -48,30 +48,30 @@ case class Operator(preconditions: State, addEffects: State, delEffects: State, 
  */
 object Operator {
 
-  def apply(preconditions: State, addEffects: State, id: String) =
-    new Operator(preconditions, addEffects, Set(), id)
+  def apply(requirements: State, assertions: State, id: String) =
+    new Operator(requirements, assertions, Set(), id)
 
   /**
    *
    */
-  def apply(preconditions: State, addEffects: State, delEffects: State, cost: Double) =
+  def apply(requirements: State, assertions: State, denials: State, cost: Double) =
     new Operator(
-      preconditions, addEffects, Set(),
-      s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})",
+      requirements, assertions, Set(),
+      s"(+{${assertions.mkString(", ")}}, -{${denials.mkString(", ")}}, ?{${requirements.mkString(", ")}})",
       cost)
 
   /**
    *
    */
-  def apply(preconditions: State, addEffects: State, delEffects: State) =
+  def apply(requirements: State, assertions: State, denials: State) =
     new Operator(
-      preconditions, addEffects, Set(),
-      s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})")
+      requirements, assertions, Set(),
+      s"(+{${assertions.mkString(", ")}}, -{${denials.mkString(", ")}}, ?{${requirements.mkString(", ")}})")
 
   /**
    *
    */
-  def apply(preconditions: State, addEffects: State): Operator = apply(preconditions, addEffects, Set[String]())
+  def apply(requirements: State, assertions: State): Operator = apply(requirements, assertions, Set[String]())
 
   /**
    *

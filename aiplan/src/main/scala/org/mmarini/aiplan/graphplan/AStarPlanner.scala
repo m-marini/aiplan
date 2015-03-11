@@ -79,7 +79,7 @@ class AStarPlanner(problem: PlanProblem, heuristic: (PlanProblem) => Double) ext
         // for each operator applicable to the selected search node state
         // it creates a new search node and filter out the ones at an already explored state
         val ss = problem.ops
-          .filter(_.preconditions.subsetOf(node.state))
+          .filter(_.requirements.subsetOf(node.state))
           .map(ConcreteNode(_, node).asInstanceOf[Node])
           .filterNot(n => newVisited.contains(n.state))
 

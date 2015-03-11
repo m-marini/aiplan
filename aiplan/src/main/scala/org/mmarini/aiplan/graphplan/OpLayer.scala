@@ -28,7 +28,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
      */
     def isPropMutex(p1: String, p2: String) = {
       val both = Set(p1, p2)
-      val mux1 = !ops.exists(op => both.subsetOf(op.addEffects))
+      val mux1 = !ops.exists(op => both.subsetOf(op.assertions))
       if (mux1) {
         val op1 = mapPropOp(p1)
         val op2 = mapPropOp(p2)
@@ -46,14 +46,14 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
   /**
    *
    */
-  def nextProps = ops.map(_.addEffects).flatten
+  def nextProps = ops.map(_.assertions).flatten
 
   /**
    * Create a map between propositions and the operators that has the proposition as positive effects
    */
   def mapPropOp = {
     // Get the set of positive effects and generator operator
-    val s1 = for (op <- ops.toSeq) yield op.addEffects.map((_, op))
+    val s1 = for (op <- ops.toSeq) yield op.assertions.map((_, op))
     val s2 = s1.flatten
 
     // Group by proposition
@@ -69,7 +69,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
   /**
    *
    */
-  def providers(p: String): Set[Operator] = ops.filter(_.addEffects.contains(p))
+  def providers(p: String): Set[Operator] = ops.filter(_.assertions.contains(p))
 
   /**
    *

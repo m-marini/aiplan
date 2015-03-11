@@ -28,8 +28,8 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
     val (stateLayer, _) = graph.head
     if (problem.goal.subsetOf(stateLayer)) graph
     else {
-      val opLayer = problem.ops.filter(_.preconditions.subsetOf(stateLayer))
-      val next = opLayer.flatMap(_.addEffects)
+      val opLayer = problem.ops.filter(_.requirements.subsetOf(stateLayer))
+      val next = opLayer.flatMap(_.assertions)
       if (next.size == stateLayer.size) Nil
       else expandRPG((next, opLayer) :: graph)
     }
@@ -77,9 +77,9 @@ class FFHeuristic(problem: PlanProblem) extends LazyLogging {
       (plan, layers)
     else {
       val (states, ops, goals) = layers.head
-      val selOps = goals.map(prop => ops.find(_.addEffects.contains(prop))).filterNot(_.isEmpty).map(_.get)
+      val selOps = goals.map(prop => ops.find(_.assertions.contains(prop))).filterNot(_.isEmpty).map(_.get)
       val npl = selOps ++ plan
-      val newGoals = selOps.map(_.preconditions).flatten
+      val newGoals = selOps.map(_.requirements).flatten
       val newLayers = layers.tail.map {
         case (s, o, g) => {
           (s, o, g ++ (newGoals.intersect(s)))

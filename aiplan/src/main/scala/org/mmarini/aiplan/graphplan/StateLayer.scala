@@ -22,9 +22,9 @@ case class StateLayer(state: State, mutex: Set[(String, String)]) extends LazyLo
   def next(ops: Set[Operator]): OpLayer = {
     // Filter all operator applicable to the state
     val appOps0 = ops.filter(op => op.isApplicable(state))
-    // Filter out all operators that have mutex preconditions 
+    // Filter out all operators that have mutex requirements 
     val appOps = appOps0.filterNot(op => {
-      val comb = combination(op.preconditions)
+      val comb = combination(op.requirements)
       val mux = mutex.exists(comb.contains)
       mux
     })
@@ -40,8 +40,8 @@ case class StateLayer(state: State, mutex: Set[(String, String)]) extends LazyLo
           val mux1 = !a.isIndipendent(b)
           if (mux1) true
           else {
-            val pa = a.preconditions
-            val pb = b.preconditions
+            val pa = a.requirements
+            val pb = b.requirements
             val comb = combination(pa, pb)
             //            val mux2 = !comb.forall(!mutex.contains(_))
             val mux2 = mutex.exists(comb.contains)

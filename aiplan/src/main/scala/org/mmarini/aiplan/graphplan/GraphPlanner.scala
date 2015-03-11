@@ -22,7 +22,7 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
       search(initGraph, initGraph.map(_ => Set[State]())) match {
         case (None, _, _) => None
         case (Some(plan), _, _) => {
-          Some(plan.map(_.filterNot(a => a.preconditions == a.addEffects && a.delEffects.isEmpty)).reverse)
+          Some(plan.map(_.filterNot(a => a.requirements == a.assertions && a.denials.isEmpty)).reverse)
         }
       }
 
@@ -133,7 +133,7 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
     if (goal.isEmpty) {
 
       // create the goal for previuos layer
-      val nextGoal = plan.map(_.preconditions).flatten
+      val nextGoal = plan.map(_.requirements).flatten
       // search backward previuos layer
       backwardSearch(graph.tail, nextGoal, noGoodTables.tail) match {
         // check for no plan found
@@ -174,7 +174,7 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
             val op = sorted.head
             logger.debug(s"         Selected op $op")
             // create the new goal removing all precondition from the goal
-            val ng = goal -- op.addEffects
+            val ng = goal -- op.assertions
             // create the new  partial plan 
             val np = plan + op
             // repeat search with th new parms
