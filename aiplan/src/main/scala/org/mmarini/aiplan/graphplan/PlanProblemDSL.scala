@@ -55,7 +55,17 @@ class PlanProblemDSL {
   /**
    *
    */
+  def init(props: Set[String]) { _init ++= props }
+
+  /**
+   *
+   */
   def goal(props: String*) { _goal ++= props }
+
+  /**
+   *
+   */
+  def goal(props: Set[String]) { _goal ++= props }
 
   /**
    *
