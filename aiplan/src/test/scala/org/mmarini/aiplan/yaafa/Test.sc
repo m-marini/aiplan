@@ -4,29 +4,25 @@ import org.mmarini.aiplan.graphplan.GraphPlanner
 import YAAAFAProblem._
 import org.mmarini.aiplan.graphplan.AStarPlanner
 import org.mmarini.aiplan.graphplan.Heuristics
+import org.mmarini.aiplan.graphplan.PlanProblemDSL
 
 object Test {
-  val plan = new GraphPlanner(problem).plan       //> 23:42:51.999 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner - backwardSearch
-                                                  //|  for All tests have passed
-                                                  //| 23:42:52.007 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -               
-                                                  //|  in Functional test has passed
+  val plan = new GraphPlanner(problem).plan       //> 08:18:48.285 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner - backwardSearch
+                                                  //|  for Performance test has passed User acceptance test has passed
+                                                  //| 08:18:48.290 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -               
+                                                  //|  in Performance test has passed
                                                   //| User acceptance test has passed
-                                                  //| All tests have passed
-                                                  //| Performance test has passed
-                                                  //| 23:42:52.007 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner - gpSearch goal=
-                                                  //| {All tests have passed}
-                                                  //| 23:42:52.008 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          curre
+                                                  //| 08:18:48.290 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner - gpSearch goal=
+                                                  //| {Performance test has passed User acceptance test has passed}
+                                                  //| 08:18:48.290 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          curre
                                                   //| nt operation set={}
-                                                  //| 23:42:52.008 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          Selec
-                                                  //| ted prop All tests have passed
-                                                  //| 23:42:52.010 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          prefi
-                                                  //| ltered operation set={final check for tests}
-                                                  //| 23:42:52.011 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          filte
-                                                  //| red operation set={final check for tests}
-                                                  //| 23:42:52.019 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          Selec
-                                                  //| ted op
+                                                  //| 08:18:48.291 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          Selec
+                                                  //| ted prop Performance test has passed
+                                                  //| 08:18:48.299 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          prefi
+                                                  //| ltered operation set={Run performance test}
+                                                  //| 08:18:48.299 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -          filte
+                                                  //| red operation set={Run performance test}
+                                                  //| 08:18:48.328 [main] DEBUG o.m.aiplan.graphplan.GraphPlanner -   
                                                   //| Output exceeds cutoff limit.
-  plan.get.mkString("\n")                         //> res0: String = Set(run functional test)
-                                                  //| Set(run performance test, run user acceptance test)
-                                                  //| Set(final check for tests)
+  plan.get.mkString("\n")                         //> res0: String = Set(Run performance test, Run user acceptance test)
 }

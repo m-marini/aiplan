@@ -54,6 +54,15 @@ object Operator {
   /**
    *
    */
+  def apply(preconditions: State, addEffects: State, delEffects: State, cost: Double) =
+    new Operator(
+      preconditions, addEffects, Set(),
+      id = s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})",
+      cost)
+
+  /**
+   *
+   */
   def apply(preconditions: State, addEffects: State, delEffects: State) =
     new Operator(
       preconditions, addEffects, Set(),

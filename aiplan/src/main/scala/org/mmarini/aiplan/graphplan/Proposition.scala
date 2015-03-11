@@ -7,8 +7,7 @@ package org.mmarini.aiplan.graphplan
  * @author us00852
  *
  */
-trait Proposition {
-}
+trait Proposition
 
 case class StringProposition(id: String) extends Proposition {
 
