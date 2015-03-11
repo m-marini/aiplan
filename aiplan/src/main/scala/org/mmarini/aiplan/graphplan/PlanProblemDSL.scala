@@ -6,30 +6,36 @@ class PlanProblemDSL {
   var _goal = Set[String]()
 
   class OperatorBuilder(descr: Option[String] = None,
-    preconditions: Set[String] = Set(),
-    addEffects: Set[String] = Set(),
-    delEffects: Set[String] = Set(),
+    requirements: Set[String] = Set(),
+    assertions: Set[String] = Set(),
+    denials: Set[String] = Set(),
     cost: Double = 1.0) {
 
-    def +?(props: String) = new OperatorBuilder(descr, preconditions + props, addEffects, delEffects, cost)
+    def require(props: String) = new OperatorBuilder(descr, requirements + props, assertions, denials, cost)
 
-    def +(props: String) = new OperatorBuilder(descr, preconditions, addEffects + props, delEffects, cost)
+    def require(props: Set[String]) = new OperatorBuilder(descr, requirements ++ props, assertions, denials, cost)
 
-    def -(props: String) = new OperatorBuilder(descr, preconditions, addEffects, delEffects + props, cost)
+    def assert(props: String) = new OperatorBuilder(descr, requirements, assertions + props, denials, cost)
 
-    def cost(c: Double) = new OperatorBuilder(descr, preconditions, addEffects, delEffects, c)
+    def assert(props: Set[String]) = new OperatorBuilder(descr, requirements, assertions ++ props, denials, cost)
+
+    def deny(props: String) = new OperatorBuilder(descr, requirements, assertions, denials + props, cost)
+
+    def deny(props: Set[String]) = new OperatorBuilder(descr, requirements, assertions, denials ++ props, cost)
+
+    def cost(c: Double) = new OperatorBuilder(descr, requirements, assertions, denials, c)
 
     def apply = descr match {
       case Some(d) => Operator(
-        preconditions.map(StringProposition),
-        addEffects.map(StringProposition),
-        delEffects.map(StringProposition),
+        requirements,
+        assertions,
+        denials,
         d,
         cost)
       case None => Operator(
-        preconditions.map(StringProposition),
-        addEffects.map(StringProposition),
-        delEffects.map(StringProposition),
+        requirements,
+        assertions,
+        denials,
         cost = cost)
     }
   }
@@ -54,15 +60,15 @@ class PlanProblemDSL {
   /**
    *
    */
-  def op(id: String) = new OperatorBuilder(Some(id))
+  def operator(id: String) = new OperatorBuilder(Some(id))
 
   /**
    *
    */
-  def op = new OperatorBuilder
+  def operator = new OperatorBuilder
 
   /**
    *
    */
-  def problem = PlanProblem.createFromBaseOps(_init.map(StringProposition), _goal.map(StringProposition), _ops.map(_.apply).toSet)
+  def problem = PlanProblem.createFromBaseOps(_init, _goal, _ops.map(_.apply).toSet)
 }

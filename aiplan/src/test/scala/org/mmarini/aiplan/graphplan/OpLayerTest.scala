@@ -7,14 +7,14 @@ import org.scalatest.Matchers
  *
  */
 class OpLayerTest extends FunSpec with Matchers {
-  describe("When a planing problem with (a,b) proposition set and (nop,change) operator set") {
+  describe("When a planing problem with (a,b) String set and (nop,change) operator set") {
 
-    val a: Proposition = "a"
-    val b: Proposition = "b"
+    val a: String = "a"
+    val b: String = "b"
     val props = Set(a, b)
 
-    def nop(p: Proposition) = Operator(Set(p), Set(p))
-    def change(from: Proposition, to: Proposition) = Operator(Set(from), Set(to), Set(from))
+    def nop(p: String) = Operator(Set(p), Set(p))
+    def change(from: String, to: String) = Operator(Set(from), Set(to), Set(from))
 
     def ops = (for (p <- props) yield nop(p)) ++
       (for {

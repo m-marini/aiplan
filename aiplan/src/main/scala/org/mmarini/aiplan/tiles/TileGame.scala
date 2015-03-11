@@ -1,4 +1,7 @@
-package org.mmarini.aiplan.graphplan
+package org.mmarini.aiplan.tiles
+
+import org.mmarini.aiplan.graphplan.Operator
+import org.mmarini.aiplan.graphplan.State
 
 /**
  *
@@ -25,20 +28,20 @@ abstract class TileGame(n: Int, m: Int) {
    *
    */
   case class Tile(id: String) {
-    def at(l: Location): Proposition = s"$id.at($l)"
+    def at(l: Location) = s"$id.at($l)"
 
-    def at(r: Int, c: Int): Proposition = at(Location(r, c))
+    def at(r: Int, c: Int): String = at(Location(r, c))
   }
 
   /**
    *
    */
   object hole {
-    def at(l: Location): Proposition = s"hole.at(${l})"
+    def at(l: Location) = s"hole.at(${l})"
 
-    def at(r: Int, c: Int): Proposition = at(Location(r, c))
+    def at(r: Int, c: Int): String = at(Location(r, c))
 
-    def at(l: (Int, Int)): Proposition = at(new Location(l))
+    def at(l: (Int, Int)): String = at(new Location(l))
 
     def move(from: Location, to: Location, tile: Tile) =
       Operator(

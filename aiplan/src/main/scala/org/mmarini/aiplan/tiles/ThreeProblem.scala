@@ -1,4 +1,7 @@
-package org.mmarini.aiplan.graphplan
+package org.mmarini.aiplan.tiles
+
+import org.mmarini.aiplan.graphplan.PlanProblem
+
 
 /**
  *

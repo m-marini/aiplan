@@ -26,7 +26,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
      * - there is no single operator in the layer that has both p1 and p2 as
      *   positive effects
      */
-    def isPropMutex(p1: Proposition, p2: Proposition) = {
+    def isPropMutex(p1: String, p2: String) = {
       val both = Set(p1, p2)
       val mux1 = !ops.exists(op => both.subsetOf(op.addEffects))
       if (mux1) {
@@ -69,7 +69,7 @@ case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
   /**
    *
    */
-  def providers(p: Proposition): Set[Operator] = ops.filter(_.addEffects.contains(p))
+  def providers(p: String): Set[Operator] = ops.filter(_.addEffects.contains(p))
 
   /**
    *

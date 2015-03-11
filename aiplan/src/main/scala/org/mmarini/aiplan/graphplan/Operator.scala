@@ -5,7 +5,7 @@ import com.sun.tracing.Probe
 /**
  *
  */
-case class Operator(preconditions: State, addEffects: State, delEffects: State, id: String, cost: Double = 1.0) {
+case class Operator(preconditions: State, addEffects: State, delEffects: State, descr: String, cost: Double = 1.0) {
   /**
    *
    */
@@ -40,7 +40,7 @@ case class Operator(preconditions: State, addEffects: State, delEffects: State, 
   /**
    *
    */
-  override def toString = id
+  override def toString = descr
 }
 
 /**
@@ -57,7 +57,7 @@ object Operator {
   def apply(preconditions: State, addEffects: State, delEffects: State, cost: Double) =
     new Operator(
       preconditions, addEffects, Set(),
-      id = s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})",
+      s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})",
       cost)
 
   /**
@@ -66,20 +66,15 @@ object Operator {
   def apply(preconditions: State, addEffects: State, delEffects: State) =
     new Operator(
       preconditions, addEffects, Set(),
-      id = s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})")
+      s"(+{${addEffects.mkString(", ")}}, -{${delEffects.mkString(", ")}}, ?{${preconditions.mkString(", ")}})")
 
   /**
    *
    */
-  def apply(preconditions: State, addEffects: State): Operator = apply(preconditions, addEffects, Set[Proposition]())
+  def apply(preconditions: State, addEffects: State): Operator = apply(preconditions, addEffects, Set[String]())
 
   /**
    *
    */
-  def apply(p: Proposition): Operator = new Operator(
-    preconditions = Set(p),
-    addEffects = Set(p),
-    delEffects = Set(),
-    cost = 0.0,
-    id = s"nop($p)")
+  def apply(p: String): Operator = new Operator(Set(p), Set(p), Set(), s"nop($p)", 0.0)
 }

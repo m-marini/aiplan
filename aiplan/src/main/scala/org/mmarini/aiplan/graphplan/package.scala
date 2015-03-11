@@ -16,12 +16,7 @@ package object graphplan {
    */
   def combination[A](x: Set[A]): Set[(A, A)] = combination(x, x)
 
-  /**
-   *
-   */
-  implicit def string2Props(id: String) = StringProposition(id)
-
-  type State = Set[Proposition]
+  type State = Set[String]
     
   type PartialPlan = Set[Operator]
   type Plan = List[PartialPlan]

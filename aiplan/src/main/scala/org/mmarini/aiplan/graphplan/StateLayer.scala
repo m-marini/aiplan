@@ -9,7 +9,7 @@ import com.typesafe.scalalogging.LazyLogging
  * @author us00852
  *
  */
-case class StateLayer(state: State, mutex: Set[(Proposition, Proposition)]) extends LazyLogging {
+case class StateLayer(state: State, mutex: Set[(String, String)]) extends LazyLogging {
 
   /**
    *

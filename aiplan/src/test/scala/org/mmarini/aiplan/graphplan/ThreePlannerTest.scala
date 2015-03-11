@@ -2,6 +2,7 @@ package org.mmarini.aiplan.graphplan
 
 import org.scalatest.FunSpec
 import org.scalatest.Matchers
+import org.mmarini.aiplan.tiles.ThreeProblem
 
 /**
  *
