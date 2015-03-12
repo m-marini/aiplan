@@ -34,17 +34,17 @@ class ThreePlannerTest extends FunSpec with Matchers {
     }
   }
 
-//  describe("A AStarPlanner") {
-//    val planner = new AStarPlanner(ThreeProblem.problem, Heuristics.hff)
-//
-//    describe("the planner") {
-//      val planOpt = planner.plan
-//
-//      it("should exist and have size 3") {
-//        planOpt should not be empty
-//        planOpt.get should have size (3)
-//        println(planOpt.get)
-//      }
-//    }
-//  }
+  describe("A AStarPlanner") {
+    val planner = new AStarPlanner(ThreeProblem.problem, Heuristics.hff)
+
+    describe("the planner") {
+      val planOpt = planner.plan
+
+      it("should exist and have size 3") {
+        planOpt should not be empty
+        planOpt.get should have size (3)
+        println(planOpt.get)
+      }
+    }
+  }
 }

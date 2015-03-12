@@ -68,7 +68,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
       case (name, loc) => tileAt(tile(name.toInt), loc)
     }.toSet
 
-  goal(holeAt("0,0"))
+  goal(holeAt(at(0, 0)))
 
   goal(locations.drop(1).zip(tiles).map {
     case (loc, tile) => tileAt(tile, loc)
