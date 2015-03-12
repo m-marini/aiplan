@@ -11,12 +11,16 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
   require(n > 0)
   require(m > 0)
 
+  def at(r: Int, c: Int) = s"($r,$c)"
+
+  def tile(i: Int) = s"[$i]"
+
   val locations = (for {
     row <- 0 until n
     col <- 0 until m
-  } yield { s"$row,$col" }).toSet
+  } yield at(row, col)).toSet
 
-  val tiles = (for (id <- 1 to (m * n - 1)) yield id.toString).toSet
+  val tiles = (for (id <- 1 to (m * n - 1)) yield tile(id)).toSet
 
   /**
    *
@@ -25,11 +29,11 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
     r <- 0 until n
     c <- 0 until m
   } yield {
-    val n1 = if (r > 0) Set(s"${r - 1},$c") else Set[String]()
-    val n2 = if (c > 0) n1 + s"$r,${c - 1}" else n1
-    val n3 = if (r < n - 1) n2 + s"${r + 1},$c" else n2
-    val n4 = if (c < m - 1) n3 + s"$r,${c + 1}" else n3
-    (s"$r,$c" -> n4)
+    val n1 = if (r > 0) Set(at(r - 1, c)) else Set[String]()
+    val n2 = if (c > 0) n1 + at(r, c - 1) else n1
+    val n3 = if (r < n - 1) n2 + at(r + 1, c) else n2
+    val n4 = if (c < m - 1) n3 + at(r, c + 1) else n3
+    (at(r, c) -> n4)
   }).toMap
 
   for {
@@ -61,7 +65,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
   def state(s: String) =
     s.split("\\s").zip(locations).map {
       case ("-", loc) => holeAt(loc)
-      case (name, loc) => tileAt(name, loc)
+      case (name, loc) => tileAt(tile(name.toInt), loc)
     }.toSet
 
   goal(holeAt("0,0"))
