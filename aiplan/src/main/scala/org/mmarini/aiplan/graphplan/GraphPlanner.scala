@@ -2,6 +2,7 @@ package org.mmarini.aiplan.graphplan
 
 import com.typesafe.scalalogging.LazyLogging
 import scala.annotation.tailrec
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Op
 
 /**
  *
@@ -10,8 +11,13 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
 
   type StateSet = Set[State]
   type StateSetList = List[StateSet]
-  type Layer = (StateLayer, Option[OpLayer])
+  case class Layer(opLayer: OpLayer, stateLayer: StateLayer)
   type PlanGraph = List[Layer]
+
+  lazy val initialGraphPlan = List(
+    Layer(
+      OpLayer(Set(), Set()),
+      new StateLayer(problem.init)))
 
   /**
    * Crate a plan for the given problem
@@ -32,9 +38,8 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
   /**
    * Check if two graphs have the same head layer (no more expansion available)
    */
-  def isEndGraph(graph: PlanGraph, next: PlanGraph) = graph.head match {
-    case (last, _) => last.isSameLayer(next.head._1)
-  }
+  def isEndGraph(graph: PlanGraph, next: PlanGraph) =
+    graph.head.stateLayer.isSameLayer(next.head.stateLayer)
 
   /**
    * Create a graph plan to reach a layer that satisfy the goal
@@ -43,26 +48,33 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
     def expandTo(graph: PlanGraph): Option[PlanGraph] = {
       // Expand to next layer
       val expGraph = expandNextLayer(graph)
-      val (lastStateLayer, _) = graph.head
-      val (nextStateLayer, _) = expGraph.head
+      val lastStateLayer = graph.head.stateLayer
+      val nextStateLayer = expGraph.head.stateLayer
       // check for end of graph
-      if (isEndGraph(graph, expGraph)) None
-      // check for goal match
-      else if (nextStateLayer.contains(problem.goal)) Some(expGraph)
-      // repeat expansion
-      else expandTo(expGraph)
+      if (isEndGraph(graph, expGraph)) {
+        logger.debug(s"${tab(graph)} Goal [${problem.goal.mkString(",")}] not found in graph plan at depth=${graph.size}")
+        None
+      } else if (nextStateLayer.contains(problem.goal)) {
+        // check for goal match
+        logger.debug(s"${tab(graph)} Goal [${problem.goal.mkString(",")}] found in graph plan at depth=${graph.size}")
+        Some(expGraph)
+      } else
+        // repeat expansion
+        expandTo(expGraph)
     }
 
-    expandTo(List((new StateLayer(problem.init), None)))
+    expandTo(initialGraphPlan)
   }
 
   /**
    * Expand a plan to next single layer
    */
   def expandNextLayer(graph: PlanGraph): PlanGraph = {
-    val ol = graph.head._1.next(problem.ops)
+    val ol = graph.head.stateLayer.next(problem.ops)
     val sl = ol.next
-    (sl, Some(ol)) :: graph
+    val expGraph = Layer(ol, sl) :: graph
+    logger.debug(s"${tab(expGraph)} Expanded graph plan to depth=${expGraph.size}, ${sl.state.size} props, ${sl.mutex.size} mutex, ${ol.ops.size} ops ${ol.mutex.size}, mutex")
+    expGraph
   }
 
   /**
@@ -76,9 +88,12 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
       case (None, newNoGoodTable) => {
         // expand next layer
         val expGrap = expandNextLayer(graph)
-        // check for end of graph
-        if (isEndGraph(expGrap, graph)) (None, graph, newNoGoodTable)
-        // search next layer 
+        logger.debug(s"${tab(graph)} Expanding graph plan to depth=${expGrap.size}")
+        if (isEndGraph(expGrap, graph)) {
+          // check for end of graph
+          logger.debug(s"${tab(graph)} No more layers in graph plan after depth=${graph.size}")
+          (None, graph, newNoGoodTable)
+        } // search next layer 
         else search(expGrap, Set[State]() :: newNoGoodTable)
       }
     }
@@ -99,21 +114,25 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
     goal: State,
     noGoodTable: StateSetList): (Option[Plan], StateSetList) = {
 
-    logger.debug(f"backwardSearch for ${goal.mkString(" ")}")
-    logger.debug(f"               in ${graph.head._1}")
-
     // Check if initial state layer has reached (no action layer)
-    if (graph.head._2.isEmpty) (Some(Nil), noGoodTable)
-    // check if the no goodTable contains the goal
-    else if (noGoodTable.head.contains(goal)) (None, noGoodTable)
-    else
+    if (graph.size == 1) {
+      logger.debug(s"${tab(graph)} Found plan for goal [${goal.mkString(",")}]")
+      (Some(Nil), noGoodTable)
+    } else if (noGoodTable.head.contains(goal))
+      // check if the no goodTable contains the goal
+      (None, noGoodTable)
+    else {
+      logger.debug(s"${tab(graph)} Searching for goal [${goal.mkString(",")}] at depth=${graph.size}")
       gpSearch(graph, goal, Set(), noGoodTable) match {
         // check if no plan has found and add the goal to noGoodTable
         case (None, newNoGoodTable) => (None, (newNoGoodTable.head + goal) :: newNoGoodTable.tail)
         // check for found plan
         case ret => ret
       }
+    }
   }
+
+  def tab(graph: PlanGraph) = (1 to graph.size).map(_ => ' ').mkString
 
   /**
    * Given a graph plan and the current goal, it searches backward the graph for a plan.
@@ -127,8 +146,6 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
     plan: PartialPlan,
     noGoodTables: StateSetList): (Option[Plan], StateSetList) = {
 
-    logger.debug(f"gpSearch goal={${goal.mkString(" ")}}")
-    logger.debug(f"         current operation set={${plan.mkString(" ")}}")
     // Check for empty goal (search backward previuos layer)
     if (goal.isEmpty) {
 
@@ -142,50 +159,46 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
         case (Some(nextPlan), nextNoGood) => (Some(plan :: nextPlan), noGoodTables.head :: nextNoGood)
       }
     } else {
-      val (_, Some(opLayer)) = graph.head
+      val opLayer = graph.head.opLayer
+      logger.debug(s"${tab(graph)} Searching for [${goal.head}] at depth=${graph.size} ...")
 
       // Select an operator set that satisfies the first goal propositions
-      logger.debug(s"         Selected prop ${goal.head}")
       val ops1 = opLayer.providers(goal.head)
-      logger.debug(s"         prefiltered operation set={${ops1.mkString(" ")}}")
 
       // Filter out the operator mutex with any other operators in the plan
       val ops = if (plan.isEmpty) ops1
-      //      else ops1.filter(op => {
-      //        val inter = plan.map((op, _)).intersect(opLayer.mutex)
-      //        inter.isEmpty
-      //      })
       else ops1.filterNot(op => {
         val oo = plan.map((op, _))
         oo.exists(opLayer.mutex)
       })
-      logger.debug(s"         filtered operation set={${ops.mkString(" ")}}")
+      val sorted = ops.toList.sortWith(_.cost <= _.cost)
 
       // check if no operators are available
-      if (ops.isEmpty) (None, noGoodTables)
-      else {
-        // Iterate for an action available
-        def loopForAction(ops: Set[Operator], noGoodTable: StateSetList): (Option[Plan], StateSetList) =
-          if (ops.isEmpty)
-            return (None, noGoodTable)
-          else {
-            // Select the operator with lower cost
-            val sorted = ops.toList.sortWith(_.cost <= _.cost)
-            val op = sorted.head
-            logger.debug(s"         Selected op $op")
-            // create the new goal removing all precondition from the goal
-            val ng = goal -- op.assertions
-            // create the new  partial plan 
-            val np = plan + op
-            // repeat search with th new parms
-            gpSearch(graph, ng, np, noGoodTables) match {
-              case (Some(plan), newNoGoodTable) => (Some(plan), newNoGoodTable)
-              case (None, newNoGoodTable) => loopForAction(ops.tail, newNoGoodTable)
+      // Iterate for an action available
+      def loopForAction(ops: List[Operator], noGoodTable: StateSetList): (Option[Plan], StateSetList) =
+        if (ops.isEmpty) {
+          logger.debug(s"${tab(graph)} No more operators satisfying [${goal.head}] at depth=${graph.size}")
+          return (None, noGoodTable)
+        } else {
+          // Select the operator with lower cost
+          val op = ops.head
+          logger.debug(s"${tab(graph)} Selected operator [$op] satisfying [${goal.head}] at depth=${graph.size}")
+          // create the new goal removing all precondition from the goal
+          val ng = goal -- op.assertions
+          // create the new  partial plan 
+          val np = plan + op
+          // repeat search with the new parms
+          logger.debug(s"${tab(graph)} Searching for remaining goal [$ng] at depth=${graph.size}")
+          gpSearch(graph, ng, np, noGoodTables) match {
+            case (Some(plan), newNoGoodTable) => {
+              logger.debug(s"${tab(graph)} Selected plan [$plan] for [${goal.mkString(",")}] at depth=${graph.size}")
+              (Some(plan), newNoGoodTable)
             }
+            case (None, newNoGoodTable) => loopForAction(ops.tail, newNoGoodTable)
           }
+        }
 
-        loopForAction(ops, noGoodTables)
-      }
+      loopForAction(sorted, noGoodTables)
     }
   }
 }

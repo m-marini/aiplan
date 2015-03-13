@@ -8,22 +8,57 @@ import org.mmarini.aiplan.dwr.DWRProblem
  *
  */
 class DWRProblemTest extends FunSpec with Matchers {
-  describe("Defined the DWR Problem") {
-    import DWRProblem._
+  import DWRProblem._
 
-    describe("the initial state layer") {
-      val l0 = new StateLayer(problem.init)
+  describe("the initial state layer of DWR problem") {
+    val l0 = new StateLayer(problem.init)
 
-      it("should contain props {R.at(1), Q.at(2), A.at(1), B.at(2), R.unloaded, Q.unloaded}") {
-        l0.state should contain("R is at L1")
-        l0.state should contain("Q is at L2")
-        l0.state should contain("A is at L1")
-        l0.state should contain("B is at L2")
-        l0.state should contain("R is unloaded")
-        l0.state should contain("Q is unloaded")
-      }
+    it("should contain props {R at L1, Q at L2, A at L1, B at L2, R unloaded, Q unloaded}") {
+      l0.state should contain(isAt("R", "L1"))
+      l0.state should contain(isAt("Q", "L2"))
+      l0.state should contain(isAt("A", "L1"))
+      l0.state should contain(isAt("B", "L2"))
+      l0.state should contain(isUnloaded("R"))
+      l0.state should contain(isUnloaded("Q"))
     }
-  } 
+  }
+
+  describe("the GraphPlanner of DWR problem") {
+    val planner = new GraphPlanner(problem)
+
+    describe("the generated plan") {
+      val pOpt = planner.plan
+      it("should exists and have 3 size") {
+        pOpt should not be empty
+        pOpt.get should have size 3
+      }
+
+      describe("1st operator id set") {
+        val o1 = pOpt.get(0).map(_.toString)
+        it("should contains ...") {
+          o1 should contain("Load A on R")
+          o1 should contain("Load B on Q")
+        }
+      }
+
+      describe("2nd operator id set") {
+        val o1 = pOpt.get(1).map(_.toString)
+        it("should contains ...") {
+          o1 should contain("Move R to L2")
+          o1 should contain("Move Q to L1")
+        }
+      }
+
+      describe("3rd operator id set") {
+        val o1 = pOpt.get(2).map(_.toString)
+        it("should contains ...") {
+          o1 should contain("Unload A from R")
+          o1 should contain("Unload B from Q")
+        }
+      }
+
+    }
+  }
 }
 //
 //      describe("the first action layer") {

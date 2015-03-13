@@ -23,6 +23,7 @@ class EightPlannerTest extends FunSpec with Matchers {
       }
     }
   }
+  
 //
 //  describe("A AStarPlanner") {
 //    val planner = new AStarPlanner(EightProblem.problem, Heuristics.hff)

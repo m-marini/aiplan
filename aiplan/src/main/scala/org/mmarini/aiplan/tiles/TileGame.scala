@@ -15,10 +15,10 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
 
   def tile(i: Int) = s"[$i]"
 
-  val locations = (for {
+  val locations = for {
     row <- 0 until n
     col <- 0 until m
-  } yield at(row, col)).toSet
+  } yield at(row, col)
 
   val tiles = (for (id <- 1 to (m * n - 1)) yield tile(id)).toSet
 
@@ -42,7 +42,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
     tile <- tiles
   } {
     define {
-      operator(s"Move $tile at $holeLocation").
+      operator(s"Move $tile to $holeLocation").
         require(Set(holeAt(holeLocation), tileAt(tile, tileLocation))).
         assert(Set(holeAt(tileLocation), tileAt(tile, holeLocation))).
         deny(Set(holeAt(holeLocation), tileAt(tile, tileLocation)))
@@ -57,7 +57,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
   /**
    *
    */
-  def holeAt(at: String) = s"hole at $at"
+  def holeAt(at: String) = s"[ ] at $at"
 
   /**
    *
@@ -72,7 +72,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
 
   goal(locations.drop(1).zip(tiles).map {
     case (loc, tile) => tileAt(tile, loc)
-  })
+  }.toSet)
 }
 
 object ThreeProblem extends TileGame(2, 2) {
