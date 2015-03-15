@@ -14,6 +14,8 @@ import EightProblem._
  */
 class EightTileGPTest extends FunSpec with Matchers {
 
+  val problem = EightProblem.apply
+  
   describe("A graph planner") {
     val planner = new GraphPlanner(problem)
     // 7 2 4

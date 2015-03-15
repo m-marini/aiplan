@@ -10,6 +10,8 @@ import org.mmarini.aiplan.dwr.DWRProblem
 class DWRProblemTest extends FunSpec with Matchers {
   import DWRProblem._
 
+  val problem = DWRProblem.apply
+
   describe("the initial state layer of DWR problem") {
     val l0 = new StateLayer(problem.init)
 

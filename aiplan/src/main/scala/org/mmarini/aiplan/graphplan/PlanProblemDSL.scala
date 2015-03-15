@@ -80,5 +80,5 @@ class PlanProblemDSL {
   /**
    *
    */
-  def problem = PlanProblem.createFromBaseOps(_init, _goal, _ops.map(_.apply).toSet)
+  def apply = PlanProblem.createFromBaseOps(_init, _goal, _ops.map(_.apply).toSet)
 }

@@ -6,14 +6,16 @@ import org.mmarini.aiplan.graphplan.Heuristics
 import org.scalatest.FunSpec
 import org.scalatest.Matchers
 
-import ThreeProblem.problem
-
 /**
  *
  */
 class ThreePlannerTest extends FunSpec with Matchers {
+
+  import ThreeProblem._
+  val problem = ThreeProblem.apply
+
   describe("A graph planner") {
-    import ThreeProblem._
+
     val planner = new GraphPlanner(problem)
 
     describe("the expand to goal") {
@@ -35,7 +37,7 @@ class ThreePlannerTest extends FunSpec with Matchers {
   }
 
   describe("A AStarPlanner") {
-    val planner = new AStarPlanner(ThreeProblem.problem, Heuristics.hff)
+    val planner = new AStarPlanner(problem, Heuristics.hff)
 
     describe("the planner") {
       val planOpt = planner.plan

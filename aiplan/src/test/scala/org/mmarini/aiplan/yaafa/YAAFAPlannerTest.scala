@@ -9,9 +9,11 @@ import YAAAFAProblem._
  *
  */
 class YAAFAPlannerTest extends FunSpec with Matchers {
-  
+
+  val problem = YAAAFAProblem.apply
+
   describe("A planner for YAAFAProblem") {
-    val planner = new GraphPlanner(YAAAFAProblem.problem)
+    val planner = new GraphPlanner(problem)
 
     describe("the plan") {
       val planOpt = planner.plan

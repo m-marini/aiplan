@@ -10,6 +10,9 @@ import org.mmarini.aiplan.dwr.DWRProblem
 class FFHeuristicTest extends FunSpec with Matchers {
   describe("Defined the heuristic on the DWR problem") {
     import DWRProblem._
+
+    val problem = DWRProblem.apply
+
     val heuristic = new FFHeuristic(problem)
 
     describe("the rpg") {

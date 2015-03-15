@@ -17,6 +17,7 @@ class OperatorTest extends FunSpec with Matchers {
   describe("An operator with precondition contained in other del effect") {
     val a = Operator(Set("a"), Set())
     val b = Operator(Set[String](), Set[String](), Set("a"))
+
     it("should be mutex") {
       a.isIndipendent(b) should be(false)
       b.isIndipendent(a) should be(false)

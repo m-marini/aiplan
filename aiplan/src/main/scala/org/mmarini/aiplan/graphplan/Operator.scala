@@ -65,7 +65,7 @@ object Operator {
    */
   def apply(requirements: State, assertions: State, denials: State) =
     new Operator(
-      requirements, assertions, Set(),
+      requirements, assertions, denials,
       s"(+{${assertions.mkString(", ")}}, -{${denials.mkString(", ")}}, ?{${requirements.mkString(", ")}})")
 
   /**

@@ -12,6 +12,9 @@ import org.mmarini.aiplan.graphplan.GraphPlanner
 class EightPlannerTest extends FunSpec with Matchers {
   describe("A graph planner") {
     import EightProblem._
+    
+    val problem = EightProblem.apply
+    
     val planner = new GraphPlanner(problem)
 
     describe("the plan") {
