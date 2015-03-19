@@ -7,17 +7,67 @@ import org.mmarini.aiplan.graphplan.Heuristics
 import org.mmarini.aiplan.graphplan.GraphPlanner
 import org.mmarini.aiplan.graphplan.StateLayer
 import org.mmarini.aiplan.graphplan.OpLayer
-import EightProblem._
 
 /**
  *
  */
 class EightTileGPTest extends FunSpec with Matchers {
 
-  val problem = EightProblem.apply
-  
-  describe("A graph planner") {
+  describe("A graph planner 1") {
+    val problem = new TileGame(3, 3) {
+      // 3 1 2
+      // - 4 5
+      // 6 7 8
+      init(state("3 1 2 - 4 5 6 7 8 9"))
+    }.apply
+
     val planner = new GraphPlanner(problem)
+
+    describe("the depth 2 graph plan") {
+      val p1 = planner.expandNextLayer(planner.initialGraphPlan)
+
+      describe("the op layer after removing previuos layer op and filtered for no nop") {
+        val ops = p1.head.opLayer.ops.--(p1(1).opLayer.ops).
+          map(_.descr).filterNot(_.startsWith("nop("))
+        it("should contian ...") {
+          ops should contain("Move [3] to (1,0)")
+          ops should contain("Move [4] to (1,0)")
+          ops should contain("Move [6] to (1,0)")
+        }
+        it("should have size 3") {
+          ops should have size (3)
+        }
+
+      }
+
+      describe("the state layer after removing previuos layer op") {
+        val states = p1.head.stateLayer.state -- p1(1).stateLayer.state
+        it("should contian ...") {
+          states should contain("[3] at (1,0)")
+          states should contain("[4] at (1,0)")
+          states should contain("[6] at (1,0)")
+          states should contain("[ ] at (0,0)")
+          states should contain("[ ] at (1,1)")
+          states should contain("[ ] at (2,0)")
+        }
+        it("should have size 3") {
+          states should have size (6)
+        }
+      }
+
+      describe("the state layer after should match the goal") {
+        val states = p1.head.stateLayer.state
+      }
+    }
+  }
+
+  describe("A graph planner") {
+    val problem = new TileGame(3, 3) {
+      init(state("7 2 4 5 - 6 8 3 1"))
+    }.apply
+
+    val planner = new GraphPlanner(problem)
+
     // 7 2 4
     // 5 - 6
     // 8 3 1

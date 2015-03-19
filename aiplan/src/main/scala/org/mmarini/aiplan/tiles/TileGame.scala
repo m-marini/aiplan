@@ -74,11 +74,3 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
     case (loc, tile) => tileAt(tile, loc)
   }.toSet)
 }
-
-object ThreeProblem extends TileGame(2, 2) {
-  init(state("1 3 - 2"))
-}
-
-object EightProblem extends TileGame(3, 3) {
-  init(state("7 2 4 5 - 6 8 3 1"))
-}

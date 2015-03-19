@@ -11,8 +11,9 @@ import org.scalatest.Matchers
  */
 class ThreePlannerTest extends FunSpec with Matchers {
 
-  import ThreeProblem._
-  val problem = ThreeProblem.apply
+  val problem = new TileGame(2, 2) {
+    init(state("1 3 - 2"))
+  }.apply
 
   describe("A graph planner") {
 
