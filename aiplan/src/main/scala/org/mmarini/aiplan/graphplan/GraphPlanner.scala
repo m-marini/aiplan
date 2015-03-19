@@ -52,7 +52,8 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
       val nextStateLayer = expGraph.head.stateLayer
       // check for end of graph
       if (isEndGraph(graph, expGraph)) {
-        logger.debug(s"${tab(graph)} Goal [${problem.goal.mkString(",")}] not found in graph plan at depth=${graph.size}")
+        val missingProps = problem.goal -- graph.head.stateLayer.state
+        logger.debug(s"${tab(graph)} Goal [${missingProps.mkString(",")}] not found in graph plan at depth=${graph.size}")
         None
       } else if (nextStateLayer.contains(problem.goal)) {
         // check for goal match
