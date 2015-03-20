@@ -55,8 +55,12 @@ class EightTileGPTest extends FunSpec with Matchers {
         }
       }
 
-      describe("the state layer after should match the goal") {
+      describe("the state layer") {
         val states = p1.head.stateLayer.state
+        it("should match the goal") {
+          for (p <- problem.goal)
+            states should contain(p)
+        }
       }
     }
   }

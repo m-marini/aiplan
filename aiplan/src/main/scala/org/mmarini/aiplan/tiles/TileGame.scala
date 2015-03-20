@@ -20,7 +20,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
     col <- 0 until m
   } yield at(row, col)
 
-  val tiles = (for (id <- 1 to (m * n - 1)) yield tile(id)).toSet
+  val tiles = for (id <- 1 to (m * n - 1)) yield tile(id)
 
   /**
    *
@@ -42,7 +42,7 @@ abstract class TileGame(n: Int, m: Int) extends PlanProblemDSL {
     tile <- tiles
   } {
     define {
-      operator(s"Move $tile to $holeLocation").
+      operator(s"Move $tile").
         require(Set(holeAt(holeLocation), tileAt(tile, tileLocation))).
         assert(Set(holeAt(tileLocation), tileAt(tile, holeLocation))).
         deny(Set(holeAt(holeLocation), tileAt(tile, tileLocation)))
