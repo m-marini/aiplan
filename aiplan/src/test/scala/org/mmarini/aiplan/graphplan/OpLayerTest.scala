@@ -34,7 +34,7 @@ class OpLayerTest extends FunSpec with Matchers {
     val nop2 = problem.opsMap("nop(p2)")
     val nop3 = problem.opsMap("nop(p3)")
 
-    val ol = OpLayer(Set(op1, op3), Set((op1, op3), (op3, op1)))
+    val ol = OpLayer(new StateLayer(problem), Set(op1, op3), Set((op1, op3), (op3, op1)))
 
     describe("the next state layer") {
       val sl = ol.next
@@ -72,7 +72,7 @@ class OpLayerTest extends FunSpec with Matchers {
     val changeba = problem.opsMap("change b to a")
 
     describe("the first action layer from (a)") {
-      val l1 = new StateLayer(problem.init).next(problem.ops)
+      val l1 = new StateLayer(problem).next
 
       it("should contain nextProps {a, b}") {
         l1.nextProps should contain("a")
@@ -84,7 +84,7 @@ class OpLayerTest extends FunSpec with Matchers {
       }
 
       describe("the next state layer of first action layer from (a)") {
-        val l2 = new StateLayer(problem.init).next(problem.ops).next
+        val l2 = new StateLayer(problem).next.next
         it("should contain props {a, b}") {
           l2.state should contain("a")
           l2.state should contain("b")

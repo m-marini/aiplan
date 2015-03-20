@@ -13,7 +13,7 @@ class DWRProblemTest extends FunSpec with Matchers {
   val problem = DWRProblem.apply
 
   describe("the initial state layer of DWR problem") {
-    val l0 = new StateLayer(problem.init)
+    val l0 = new StateLayer(problem)
 
     it("should contain props {R at L1, Q at L2, A at L1, B at L2, R unloaded, Q unloaded}") {
       l0.state should contain(isAt("R", "L1"))

@@ -9,17 +9,38 @@ import com.typesafe.scalalogging.LazyLogging
  * @author us00852
  *
  */
-case class StateLayer(state: State, mutex: Set[(String, String)]) extends LazyLogging {
+case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)], ops: Set[Operator]) extends LazyLogging {
 
   /**
    *
    */
-  def this(state: State) = this(state, Set())
+  def this(p: PlanProblem) = this(null, p.init, Set(), p.ops)
+
+  /**
+   * Return the number of state layer to root
+   */
+  def depth: Int = {
+    def traverseForCount(graph: StateLayer, n: Int): Int =
+      if (graph.isRoot) n
+      else traverseForCount(graph.parent.parent, n + 1)
+
+    traverseForCount(this, 1)
+  }
 
   /**
    *
    */
-  def next(ops: Set[Operator]): OpLayer = {
+  def isRoot = parent == null
+
+  /**
+   *
+   */
+  def isLastLayer = !isRoot && isSameLayer(parent.parent)
+
+  /**
+   *
+   */
+  def next: OpLayer = {
     // Filter all operator applicable to the state
     val appOps0 = ops.filter(op => op.isApplicable(state))
     // Filter out all operators that have mutex requirements 
@@ -52,7 +73,7 @@ case class StateLayer(state: State, mutex: Set[(String, String)]) extends LazyLo
 
     // Filter all operators that are mutes
     val mutexOp = combination(appOps).filter(isMutex)
-    OpLayer(appOps, mutexOp)
+    OpLayer(this, appOps, mutexOp)
   }
 
   /**

@@ -23,7 +23,7 @@ class ThreePlannerTest extends FunSpec with Matchers {
       val etgOpt = planner.expandToGoal
       they("should exists") {
         etgOpt should not be empty
-        etgOpt.get.size should be(4)
+        etgOpt.get.depth should be(4)
       }
     }
 

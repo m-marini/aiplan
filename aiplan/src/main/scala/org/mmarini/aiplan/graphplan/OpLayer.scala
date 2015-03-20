@@ -5,12 +5,12 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.Op
 /**
  *
  */
-case class OpLayer(ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
+case class OpLayer(parent: StateLayer, ops: Set[Operator], mutex: Set[(Operator, Operator)]) {
 
   /**
    *
    */
-  def next: StateLayer = StateLayer(nextProps, nextMutex)
+  lazy val next: StateLayer = StateLayer(this, nextProps, nextMutex, parent.ops)
 
   /**
    *

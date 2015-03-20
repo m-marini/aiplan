@@ -8,10 +8,10 @@ import org.scalatest.Matchers
  */
 class GraphPlannerTest extends FunSpec with Matchers {
 
-  def fullPlan(planner: GraphPlanner): planner.PlanGraph = {
-    def expand(plan: planner.PlanGraph): planner.PlanGraph = {
-      val ep = planner.expandNextLayer(plan)
-      if (ep.head.stateLayer.isSameLayer(ep(1).stateLayer))
+  def fullPlan(planner: GraphPlanner): StateLayer = {
+    def expand(plan: StateLayer): StateLayer = {
+      val ep = plan.next.next
+      if (ep.isLastLayer)
         plan
       else
         expand(ep)
@@ -29,15 +29,15 @@ class GraphPlannerTest extends FunSpec with Matchers {
 
     val planner = new GraphPlanner(problem)
 
-    describe("the full planner") {
+    describe("the full expanded graph") {
       val fp = fullPlan(planner)
 
       it("should have 2 layers") {
-        fp should have size 2
+        fp.depth shouldBe (2)
       }
 
-      describe("the 1st state layer") {
-        val l = fp(1).stateLayer
+      describe("the 2st back state layer") {
+        val l = fp.parent.parent
         it("should contain init") {
           l.state should contain("init")
         }
@@ -48,18 +48,8 @@ class GraphPlannerTest extends FunSpec with Matchers {
           l.mutex shouldBe empty
         }
       }
-      describe("the 1st op layer") {
-        val l = fp(1).opLayer
-        val descr = l.ops.map(_.descr).filterNot(_ startsWith ("nop("))
-        it("should contain no operators") {
-          descr shouldBe empty
-        }
-        it("should contain no mutex") {
-          l.mutex shouldBe empty
-        }
-      }
       describe("the last state layer") {
-        val l = fp.head.stateLayer
+        val l = fp
         it("should contain init,goal") {
           l.state should contain("init")
           l.state should contain("goal")
@@ -72,7 +62,7 @@ class GraphPlannerTest extends FunSpec with Matchers {
         }
       }
       describe("the last op layer") {
-        val l = fp.head.opLayer
+        val l = fp.parent
         val descr = l.ops.map(_.descr).filterNot(_ startsWith ("nop("))
         it("should contain op1") {
           descr should contain("op1")
@@ -100,21 +90,12 @@ class GraphPlannerTest extends FunSpec with Matchers {
     describe("the full planner") {
       val fp = fullPlan(planner)
 
-      it("should have 2 layers") {
-        fp should have size 2
+      it("should have 2 depth") {
+        fp.depth shouldBe (2)
       }
 
-      describe("the 1st op layer") {
-        val l = fp(1).opLayer
-        it("should contain no operators") {
-          l.ops shouldBe empty
-        }
-        it("should contain no mutex") {
-          l.mutex shouldBe empty
-        }
-      }
-      describe("the 1st state layer") {
-        val l = fp(1).stateLayer
+      describe("the 2nd back state layer") {
+        val l = fp.parent.parent
         it("should contain init") {
           l.state should contain("init")
         }
@@ -126,7 +107,7 @@ class GraphPlannerTest extends FunSpec with Matchers {
         }
       }
       describe("the 2nd op layer") {
-        val l = fp(0).opLayer
+        val l = fp.parent
         val descr = l.ops.map(_.descr)
         it("should contain nop(init),op1,op2") {
           descr should contain("nop(init)")

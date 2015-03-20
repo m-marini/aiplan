@@ -18,7 +18,7 @@ class StateLayerTest extends FunSpec with Matchers {
     val change = problem.opsMap("change")
 
     describe("the next state layer of initial state (a)") {
-      val l1 = new StateLayer(problem.init).next(problem.ops)
+      val l1 = new StateLayer(problem).next
       it("should contain ops {nop(a), change}") {
         l1.ops should contain theSameElementsAs Set(nopa, change)
       }
@@ -73,10 +73,10 @@ class StateLayerTest extends FunSpec with Matchers {
     }
 
     describe("a state layer") {
-      val sl = StateLayer(Set("p1", "p2"), Set())
+      val sl = StateLayer(null, Set("p1", "p2"), Set(), problem.ops)
 
       describe("the next operator layer") {
-        val ol = sl.next(problem.ops)
+        val ol = sl.next
 
         it("should contain op1,...") {
           val ids = ol.ops.map(_.descr)
@@ -144,10 +144,10 @@ class StateLayerTest extends FunSpec with Matchers {
     }
 
     describe("a state layer with p1 and p2 mutex") {
-      val sl = StateLayer(Set("p1", "p2"), Set(("p1", "p2"), ("p2", "p1")))
+      val sl = StateLayer(null, Set("p1", "p2"), Set(("p1", "p2"), ("p2", "p1")),problem.ops)
 
       describe("the next operator layer") {
-        val ol = sl.next(problem.ops)
+        val ol = sl.next
 
         it("should contain op1,...") {
           val ids = ol.ops.map(_.descr)
