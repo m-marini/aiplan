@@ -20,7 +20,7 @@ class ThreePlannerTest extends FunSpec with Matchers {
     val planner = new GraphPlanner(problem)
 
     describe("the expand to goal") {
-      val etgOpt = planner.expandToGoal
+      val etgOpt = planner.initialGraphPlan.expandUntilPattern(problem.goal)
       they("should exists") {
         etgOpt should not be empty
         etgOpt.get.depth should be(4)
