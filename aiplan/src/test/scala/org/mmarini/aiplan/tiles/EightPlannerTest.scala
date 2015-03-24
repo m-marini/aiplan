@@ -42,10 +42,9 @@ class EightPlannerTest extends FunSpec with Matchers {
   //      init(state("7 2 4 5 - 6 8 3 1"))
   //    }
 
-  describe("A graph planner 16") {
+  describe("A graph planner 15") {
     val problem = new TileGame(3, 3) {
 
-      init(state("2 5 - 3 6 4 7 8 1"))
       // 2 5 -
       // 3 6 4
       // 7 8 1
@@ -70,6 +69,7 @@ class EightPlannerTest extends FunSpec with Matchers {
       // 6 4 -
       // 7 8 1
       // [1] org.mmarini.aiplan.Down$@5488bcae
+//      init(state("3 2 5 6 4 1 7 8 -"))
       // 3 2 5
       // 6 4 1
       // 7 8 -
@@ -106,6 +106,7 @@ class EightPlannerTest extends FunSpec with Matchers {
       // 4 - 5
       // 6 7 8
       // [4] org.mmarini.aiplan.Left$@1dae9d0c
+      init(state("3 1 2 - 4 5 6 7 8"))
       // 3 1 2
       // - 4 5
       // 6 7 8
@@ -125,21 +126,21 @@ class EightPlannerTest extends FunSpec with Matchers {
         planOpt should not be empty
         val descr = planOpt.get.flatten.map(_.descr)
         descr should contain theSameElementsInOrderAs (List(
-          "Move [5]",
-          "Move [2]",
-          "Move [3]",
-          "Move [6]",
-          "Move [4]",
-          "Move [1]",
-          "Move [8]",
-          "Move [7]",
-          "Move [6]",
-          "Move [4]",
-          "Move [1]",
-          "Move [5]",
-          "Move [2]",
-          "Move [1]",
-          "Move [4]",
+//          "Move [5]",
+//          "Move [2]",
+//          "Move [3]",
+//          "Move [6]",
+//          "Move [4]",
+//          "Move [1]",
+//          "Move [8]",
+//          "Move [7]",
+//          "Move [6]",
+//          "Move [4]",
+//          "Move [1]",
+//          "Move [5]",
+//          "Move [2]",
+//          "Move [1]",
+//          "Move [4]",
           "Move [3]"))
       }
     }

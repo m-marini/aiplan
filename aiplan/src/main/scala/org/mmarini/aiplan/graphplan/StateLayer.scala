@@ -25,15 +25,18 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
   /**
    *
    */
-  def expandUntilPattern(pattern: State): Option[StateLayer] =
+  def expandUntilPattern(pattern: State): Option[StateLayer] = {
+    logger.debug(s"[depth=$depth] Expanding ${state.size} states, ${mutex.size} mutex")
     if (contains(pattern)) {
-      logger.debug(s"Pattern matched ${pattern.mkString(",")} at $depth")
+      logger.debug(s"[depth=$depth] Pattern matched ${pattern.mkString(",")}")
       Some(this)
     } else if (isLastLayer) {
-      logger.debug(s"No plan found for ${pattern.mkString(",")}")
+      logger.debug(s"[depth=$depth] No plan found for ${pattern.mkString(",")}")
       None
-    } else
+    } else {
       next.next.expandUntilPattern(pattern);
+    }
+  }
 
   /**
    *
@@ -48,7 +51,7 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
   /**
    *
    */
-  def next: OpLayer = {
+  lazy val next: OpLayer = {
     // Filter all operator applicable to the state
     val appOps0 = ops.filter(op => op.isApplicable(state))
     // Filter out all operators that have mutex requirements 
@@ -114,18 +117,22 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
    */
   def backwardSearch(
     goal: State,
-    unmatches: StateSetList): (Option[Plan], StateSetList) = {
+    blackList: StateSetList): (Option[Plan], StateSetList) = {
 
     // Check if initial state layer has reached (no action layer)
     if (isRoot) {
-      (Some(Nil), unmatches)
-    } else if (unmatches.head.contains(goal))
+      (Some(Nil), blackList)
+    } else if (blackList.head.contains(goal))
       // check if the no goodTable contains the goal
-      (None, unmatches)
+      (None, blackList)
     else {
-      gpSearch(goal, Set(), unmatches) match {
+      gpSearch(goal, Set(), blackList) match {
         // check if no plan has found and add the goal to noGoodTable
-        case (None, newUnmatches) => (None, (newUnmatches.head + goal) :: newUnmatches.tail)
+        case (None, newBlackList) => {
+          logger.debug(s"Add goal ${goal.mkString(",")} to black list")
+          val nextBlackList = (newBlackList.head + goal) :: newBlackList.tail
+          (None, nextBlackList)
+        }
         // check for found plan
         case ret => ret
       }
@@ -141,18 +148,21 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
   def gpSearch(
     goal: State,
     plan: PartialPlan,
-    unmatches: StateSetList): (Option[Plan], StateSetList) = {
+    blackList: StateSetList): (Option[Plan], StateSetList) = {
 
     // Check for empty goal (search backward previuos layer)
     if (goal.isEmpty) {
       // create the goal for previuos layer
       val nextGoal = plan.map(_.requirements).flatten
       // search backward previuos layer
-      parent.parent.backwardSearch(nextGoal, unmatches.tail) match {
+      parent.parent.backwardSearch(nextGoal, blackList.tail) match {
         // check for no plan found
-        case (None, nextUnmatches) => (None, unmatches.head :: nextUnmatches)
+        case (None, nextBlackList) => {
+          logger.debug(s"Black list on exit\n  ${nextBlackList.mkString("  \n")}")
+          (None, blackList.head :: nextBlackList)
+        }
         // check for plan found
-        case (Some(nextPlan), nextUnmatches) => (Some(plan :: nextPlan), unmatches.head :: nextUnmatches)
+        case (Some(nextPlan), nextBlackList) => (Some(plan :: nextPlan), blackList.head :: nextBlackList)
       }
     } else {
       val opLayer = parent
@@ -171,10 +181,10 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
       // check if no operators are available
       // Iterate for an action available
       @tailrec
-      def loopForAction(ops: List[Operator], unmatches: StateSetList): (Option[Plan], StateSetList) =
+      def loopForAction(ops: List[Operator], blackList: StateSetList): (Option[Plan], StateSetList) =
         if (ops.isEmpty) {
           logger.debug(s"Plan not found for ${goal.mkString(",")}")
-          return (None, unmatches)
+          return (None, blackList)
         } else {
           // Select the operator with lower cost
           val op = ops.head
@@ -183,16 +193,16 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
           // create the new  partial plan 
           val np = plan + op
           // repeat search with the new parms
-          gpSearch(ng, np, unmatches) match {
-            case (Some(plan), newUnmatches) => {
+          gpSearch(ng, np, blackList) match {
+            case (Some(plan), newBlackList) => {
               logger.debug(s"Plan found for ${ops.mkString(",")}")
-              (Some(plan), newUnmatches)
+              (Some(plan), newBlackList)
             }
-            case (None, newUnmatches) => loopForAction(ops.tail, newUnmatches)
+            case (None, newBlackList) => loopForAction(ops.tail, newBlackList)
           }
         }
 
-      loopForAction(sorted, unmatches)
+      loopForAction(sorted, blackList)
     }
   }
 

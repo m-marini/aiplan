@@ -24,7 +24,6 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
           Some(plan.map(_.filterNot(a => a.requirements == a.assertions && a.denials.isEmpty)).reverse)
         }
       }
-
     }
   }
 
@@ -32,21 +31,21 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
    * search and expand the graph until a plan is found or no plan are available
    */
   @tailrec
-  final def search(graph: StateLayer, noGoodTable: StateSetList): (Option[Plan], StateLayer, StateSetList) =
-    graph.backwardSearch(problem.goal, noGoodTable) match {
+  final def search(graph: StateLayer, blackList: StateSetList): (Option[Plan], StateLayer, StateSetList) =
+    graph.backwardSearch(problem.goal, blackList) match {
       // check for found plan
-      case (Some(plan), newNoGoodTable) => (Some(plan), graph, newNoGoodTable)
-      case (None, newNoGoodTable) => {
+      case (Some(plan), newBlackList) => (Some(plan), graph, newBlackList)
+      case (None, newBlackList) => {
         // expand next layer
+        logger.debug(s"No plan found at depth ${graph.depth}, try expanding graph ...")
         val expGraph = graph.next.next
-        logger.debug(s"No plan found, try expanding graph to depth=${expGraph.depth}")
         if (expGraph.isLastLayer) {
           // check for end of graph
           logger.debug("No plan found, no more layer in plan graph.")
-          (None, graph, newNoGoodTable)
+          (None, graph, newBlackList)
         } else
           // search next layer 
-          search(expGraph, Set[State]() :: newNoGoodTable)
+          search(expGraph, Set[State]() :: newBlackList)
       }
     }
 }
