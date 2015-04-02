@@ -17,8 +17,8 @@ class GraphPlanner(problem: PlanProblem) extends LazyLogging {
   def plan: Option[Plan] = initialGraphPlan.expandUntilPattern(problem.goal) match {
     case None => None
     case Some(initGraph) => {
-      val noGoodCache = (1 to initGraph.depth).map(_ => Set[State]()).toList
-      search(initGraph, noGoodCache) match {
+      val blackList = (1 to initGraph.depth).map(_ => Set[State]()).toList
+      search(initGraph, blackList) match {
         case (None, _, _) => None
         case (Some(plan), _, _) => {
           Some(plan.map(_.filterNot(a => a.requirements == a.assertions && a.denials.isEmpty)).reverse)

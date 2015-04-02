@@ -20,6 +20,48 @@ class GraphPlannerTest extends FunSpec with Matchers {
     expand(planner.initialGraphPlan)
   }
 
+  /**
+   * Dobbiamo testare un caso dove all'uscita del primo ciclo di espansione
+   * il grafo dei piani non contine il piano effettivo ma è necessario effettuare
+   * almeno un'espansione ulteriore del piano.
+   *
+   * Graph plan:
+   * [A] []
+   * [?A+B ?A+A] []
+   * [A B] [] 
+   * [?A+C-A ?A+A ?B+B] [(+C-A,?A+A)] 
+   * [A B C] [(A C)]
+   * [?C+A ?A+A ?B+B ?C+C]()
+   * [A B C] []
+   */
+  describe("Futher expansion test") {
+    val problem = new PlanProblemDSL {
+      init("A")
+      goal("B", "C")
+      define { operator("Add A") assert ("A") }
+      define { operator("Add B") assert ("B") }
+    }.apply
+    val planner = new GraphPlanner(problem)
+
+    describe("The plan") {
+      val planOpt = planner.plan
+
+      it("should have size 3") {
+        planOpt should not be empty
+        planOpt.get should have size 3
+
+      }
+      it("should coontain ...") {
+        planOpt should not be empty
+        val plan = planOpt.get.flatten.map(_.descr)
+        plan should contain theSameElementsInOrderAs (List("Add A", "Add B", "Add A"))
+      }
+    }
+  }
+
+  /**
+   *
+   */
   describe("Given a problem with just one operator") {
 
     val problem = new PlanProblemDSL {
