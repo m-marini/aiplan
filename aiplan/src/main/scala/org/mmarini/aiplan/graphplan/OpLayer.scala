@@ -21,10 +21,14 @@ case class OpLayer(parent: StateLayer, ops: Set[Operator], mutex: Set[(Operator,
 
     /**
      * Two propositions are mutex if:
-     * - there is no single operator in the layer that has both p1 and p2 as
-     *   positive effects and
-     * - every operator in the layer that has p1 as positive effect is mutex
-     *   with every operator in the layer that has p2 as positive effect
+     * - there is no single operator in the layer that asserts both p1 and p2 and
+     * - every operator in the layer that asserts p1 is mutex
+     *   with every operator in the layer that asserts p2
+     *   
+     * Two propositions are NOT mutex if:
+     * - there is at least one operator in the layer that has asserts p1 and p2  or
+     * - every operator in the layer that asserts p1 is not mutex
+     *   with every operator in the layer that asserts p2
      */
     def isPropMutex(p1: String, p2: String) = {
       val both = Set(p1, p2)

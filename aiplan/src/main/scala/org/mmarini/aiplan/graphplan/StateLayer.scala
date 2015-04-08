@@ -64,7 +64,17 @@ case class StateLayer(parent: OpLayer, state: State, mutex: Set[(String, String)
     /**
      * Two operators are mutex if:
      * - they are dependent or
-     * - a precondition of op1 is mutex with a precondition of op2
+     * - a requirement of op1 is mutex with a requirement of op2
+     * 
+     * or in other words:
+     * - exists a denial of op1 that is a requirements or an assertion of op2 or
+     * - exists a denial of op2 that is a requirements or an assertion of op1 or
+     * - a requirement of op1 is mutex with a requirement of op2
+     *
+     * Two operators are NOT mutex if:
+     * - they are independent and
+     * - a requirement of op1 is not mutex with a requirement of op2
+     *
      */
     def isMutex(ops: (Operator, Operator)): Boolean = ops match {
       case (a, b) =>

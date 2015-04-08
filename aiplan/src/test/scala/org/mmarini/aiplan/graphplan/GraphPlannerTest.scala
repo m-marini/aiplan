@@ -25,21 +25,35 @@ class GraphPlannerTest extends FunSpec with Matchers {
    * il grafo dei piani non contine il piano effettivo ma è necessario effettuare
    * almeno un'espansione ulteriore del piano.
    *
-   * Graph plan:
-   * [A] []
-   * [?A+B ?A+A] []
-   * [A B] [] 
-   * [?A+C-A ?A+A ?B+B] [(+C-A,?A+A)] 
-   * [A B C] [(A C)]
-   * [?C+A ?A+A ?B+B ?C+C]()
-   * [A B C] []
+   * Goal CE
+   * A -> BC -> BCE
+   * A -> DE
+   *
+   * ?A+B-A
+   * ?A+D-A
+   * ?B+C
+   * ?D+E
+   * ?C+E
+   *
+   * Graph plan
+   * S1: [A]
+   * O1: [?A+A ?A+B-A, ?A+D-A]
+   *       [(?A+A ?A+B-A) (?A+A ?A+D-A) (?A+B-A ?A+D-A)]
+   * S2: [A B D] [AB AD BD]
+   * O3: [?B+C ?D+E ?B+B ?D+D ?A+A ?A+B-A, ?A+D-A]
+   *       [(?A+A ?A+B-A) (?A+A ?A+D-A) (?A+B-A ?A+D-A)
+   *        (... any ops with oher ops)]
+   * S3: [A B D C E] [ AB AD BD AC AE BE]
    */
   describe("Futher expansion test") {
     val problem = new PlanProblemDSL {
       init("A")
-      goal("B", "C")
-      define { operator("Add A") assert ("A") }
-      define { operator("Add B") assert ("B") }
+      goal("C", "E")
+      define { operator("Add B") require ("A") assert ("B") deny ("A") }
+      define { operator("Add D") require ("A") assert ("D") deny ("A") }
+      define { operator("Add C") require ("B") assert ("C") }
+      define { operator("Add E") require ("D") assert ("E") }
+      define { operator("When C add E") require ("C") assert ("E") }
     }.apply
     val planner = new GraphPlanner(problem)
 

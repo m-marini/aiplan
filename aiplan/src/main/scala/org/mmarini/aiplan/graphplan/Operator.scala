@@ -21,12 +21,17 @@ case class Operator(requirements: State, assertions: State, denials: State, desc
     requirements.subsetOf(state)
 
   /**
-   * Two operators are indipendent iff:
-   * - any negative effects of op1 are neither in requirements nor positive effects of op2 and
-   * - any negative effects of op2 are neither in requirements and positive effects of op1
+   * Two operators are independent iff;
+   * - any denials of op1 are neither a requirements nor assertions of op2 and
+   * - any denials of op2 are neither a requirements nor assertions of op1
+   * 
    * or in other word
-   * - not exists any negative effects of op1 that is a precondition or a positive effect of op2 and
-   * - not exists any negative effects of op2 that is a precondition or a positive effect of op1 and
+   * - not exists any denials of op1 that is a requirements or an assertion of op2 and
+   * - not exists any denials of op2 that is a requirements or an assertion of op1
+   * 
+   * Two operators are dependent iff;
+   * - exists A denial of op1 that is a requirements or an assertion of op2 or
+   * - exists a denial of op2 that is a requirements or an assertion of op1
    */
   def isIndipendent(op: Operator): Boolean = {
     val p1 = assertions.union(requirements)
